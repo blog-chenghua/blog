@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="google-site-verification" content="koFxmEYwvDDlW78oBJ3uN6VHYCEw__3w3lVITK79cWE" />
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Cheng Hua">
+
+
+
+    <meta name="description" content="blog-chenghua">
+
+
+
+<title>英文阅读文献 | Chenghua&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search');
+        const menuToggle = $('.menu-toggle');
+        const title = $('.navbar-header-title ');
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+            menuToggle.addClass("open-search")
+            title.addClass("mobile-title-hidden")
+        } else {
+            search.removeClass("mobile-search");
+            menuToggle.removeClass("open-search")
+            // title.css({visibility: 'visible'})
+            title.removeClass("mobile-title-hidden")
+        } 
+
+       
+    }
+
+    function inputChange(e) {
+        const value = e.target.value;
+        const pc = $('#pc-search-input');
+        const mobile = $('#mobile-search-input');
+        const modalInput = $('#modal-form-input');
+        // 其中一个搜索框修改要更改另外两个搜索框
+        const inputArray = [pc, mobile, modalInput];
+        // modalInput.val("fuck")
+        for(let i = 0; i < inputArray.length; i++) {
+            if(e.target === inputArray[i][0]) {
+                continue;
+            }
+            inputArray[i].val(value);
+        }
+        
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json";
+        $(formEl).submit(function(e){
+            if(e && e.preventDefault){
+                e.preventDefault();
+            }else{
+                window.event.returnValue = false;
+            }
+            
+            const modalInput = $('#modal-form-input');
+         
+            if(!flag && modalInput.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+                $(".form-input").focus();
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            visibility: 'visible'
+                        });
+                    },
+                    success: function( datas ) {
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data) {
+                            var isMatch = true;
+                            var data_title = data.title && data.title.trim().toLowerCase() || 'Untitled';
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                            const loadingBar = $('.search-loading-bar') 
+                            loadingBar.css({
+                                visibility: 'hidden',
+                            });
+                        }, 300)
+                    }
+                });
+            })
+        
+        });
+    }
+    
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+<meta name="generator" content="Hexo 6.3.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+<link rel="alternate" href="/atom.xml" title="Chenghua's Blog" type="application/atom+xml">
+</head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Chenghua&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Search" autocomplete="off" onchange="inputChange(event)" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div class="navbar-header-title">
+                    <a href="/">Chenghua&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="navbar-mobile-right">
+                    
+                    
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Search" autocomplete="off" onchange="inputChange(event)" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+
+    
+            </div>
+           
+        </div>
+    </nav>
+
+</header>
+
+            <div class="main">
+                <div class="container">
+    
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">英文阅读文献</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/about">Cheng Hua</a>
+                    
+                    
+                    
+                        <span class="post-time">
+                        Date: <a href="#">October 11, 2023&nbsp;&nbsp;16:00:00</a>
+                        </span>
+                    
+                    
+                        
+                        <span class="post-count">
+                        Words:
+                        <a href="">1.6k</a> 
+                        </span>
+                        
+                        
+                        <span class="post-count">
+                        Time:
+                        <a href="">10min</a> 
+                        </span>
+                        
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <h3 id="After-its-brutal-attack-Hamas-is-calculating-its-next-move"><a href="#After-its-brutal-attack-Hamas-is-calculating-its-next-move" class="headerlink" title="After its brutal attack, Hamas is calculating its next move"></a>After its brutal attack, Hamas is calculating its next move</h3><p><img src="https://www.economist.com/cdn-cgi/image/width=1424,quality=80,format=auto/content-assets/images/20231014_MAP503.jpg" alt="Fighters with the Saraya al-Quds Brigades, the armed wing of the Palestinian Islamic Jihad movement, in the streets of Gaza"></p>
+<p>Hamas says it is expecting a ground invasion of Gaza. It is steadying the nerves of its population for the suffering that will follow. “Either we die slowly or we die taking the occupation with us,” says a Hamas official referring to Israel. It argues that the winds are in its favour. After multiple wars, its forces are more battle-hardened, innovative and better-equipped than ever. In a clash with Israel in 2014 its brigades continued fighting for 50 days. Israeli air power is pummelling Hamas, but the group believes that Israel’s list of targets is partial and outdated. It also thinks that <a href="https://www.economist.com/by-invitation/2023/10/10/the-crisis-shows-the-failure-of-israeli-policy-towards-palestinians-says-shlomo-brom">Israel’s decision-making</a> is impaired by internal political disputes and that the Jewish state may be ill-placed to win a ground war. Fighting in the densely populated strip will exact a steep humanitarian toll that could sway global public opinion against Israel and draw sympathisers elsewhere in the region into the fray, Hamas hopes.</p>
+<p>HAMAS SAYS IT is expecting a ground invasion of Gaza. It is steadying the nerves of its population for the suffering that will follow. “Either we die slowly or we die taking the occupation with us,” says a Hamas official referring to Israel. It argues that the winds are in its favour. After multiple wars, its forces are more battle-hardened, innovative and better-equipped than ever. In a clash with Israel in 2014 its brigades continued fighting for 50 days. Israeli air power is pummelling Hamas, but the group believes that Israel’s list of targets is partial and outdated. It also thinks that <a href="https://www.economist.com/by-invitation/2023/10/10/the-crisis-shows-the-failure-of-israeli-policy-towards-palestinians-says-shlomo-brom">Israel’s decision-making</a> is impaired by internal political disputes and that the Jewish state may be ill-placed to win a ground war. Fighting in the densely populated strip will exact a steep humanitarian toll that could sway global public opinion against Israel and draw sympathisers elsewhere in the region into the fray, Hamas hopes.</p>
+<p>Above all, notes Hamas’s military spokesman, it holds <a href="https://www.economist.com/middle-east-and-africa/2023/10/08/israeli-hostages-now-face-a-terrifying-ordeal">more than 100 Israeli hostages</a> who would be at as great a risk from an Israeli offensive as Palestinian civilians. It intends to use them as bargaining chips to secure a mass release of Palestinian prisoners and to end Israel’s blockade. “Negotiations have already started through the Egyptians,” says a Hamas official. And, notes an Israeli mediator, referring to the captured Israeli soldier Hamas exchanged for over 1,000 Palestinian prisoners in 2011, the price they will seek to exact now will be higher because “they have a hundred Gilad Shalits.” Hamas has said they will execute one hostage for each unannounced Israeli strike on homes in Gaza (though the hostages are valuable bargaining chips).</p>
+<p>Before the latest attack Israel and Hamas had fought four major wars and had a number of smaller clashes since the Islamist group took control of Gaza and its 2m people in 2007. These cost thousands of lives, most of them Palestinian. But since the end of a two-week-long battle in 2021, Hamas has avoided escalating the conflict and has indeed restrained other Palestinian militants when they fired rockets into Israel. Many Israelis believed the Islamist group was more interested in maintaining a ceasefire in order to focus on rebuilding the impoverished and overcrowded coastal strip than in sparking another bloody and pointless war. The Israeli government hoped that allowing thousands of Palestinian labourers to work in Israel so long as calm prevailed would provide a further incentive to keep the peace. And some officials hoped that Hamas itself could be co-opted into a long-term truce. Its brutal attack on October 7th shattered that illusion. “Once a terrorist group, always a terrorist group,” says Yaakov Amidror, a former head of Israel’s National Security Council.</p>
+<iframe src="https://www.youtube.com/embed/fFpXTFOKWI0" height="360" width="100%" style="margin: 0px; padding: 0px; border: 0px; font: inherit; vertical-align: baseline;"></iframe>
+
+
+
+<p>For some time there have been signs that Israel might have been misreading the situation in Gaza. For years, Israeli officials have shrugged off warnings that living conditions in the enclave were so dire that the frustrations they caused could spark an explosion. When Israel withdrew its forces from Gaza in 2005, it was hoped that the territory would be able to export produce into Egypt and Israel and import goods through a border crossing with Egypt. But since Hamas took control of Gaza in 2007 the territory has been under a blockade by both countries that has constrained trade, strangled its economy and largely confined its people.</p>
+<p>Adding to those grievances was a sense in Gaza of abandonment by the wider world. Earlier this summer Qatar, which had been sending Hamas $30m a month to pay the salaries of public servants among other things, cut the payments to $10m a month. Even that often arrived late. (“If you’re trying to pay your way out of resistance, you better pay and pay the maximum,” says an interlocutor shuttling between Hamas and Western governments.) The Abraham accords, which established diplomatic ties between Israel and several Arab countries including the United Arab Emirates, added to Gazans’ feeling of suffering alone. “We’ve decided to put an end to all this,” said Muhammad Deif, the military wing’s commander, in a communiqué announcing the attack. “So that the enemy understands that he can no longer revel without being held to account.”</p>
+<p>The Islamists are also seeking to change things far beyond Gaza. “We want to spark rebellion” in the occupied West Bank, said a Hamas official, both against Mahmoud Abbas, the ailing president of the Palestinian Authority (PA), and Israel, which props up the PA. Hamas also aims to return the issue of Palestine to the top of the Middle East’s political agenda. In Lebanon’s Palestinian refugee camps, visitors report a carnival atmosphere. In Egypt’s second city, Alexandria, a policeman shot dead two Israeli tourists. And Hamas hopes to spark a wider conflict by appealing for help from other members of the “axis of resistance”, as Iran and its satellites in Iraq, Syria, Lebanon and the Houthi-run part of Yemen like to call themselves.</p>
+<p>Yet it is far from clear that the other members of that axis will be enthusiastic about joining the fight. Hizbullah, the party-cum-militia in Lebanon, has a huge arsenal of rockets aimed at Israel. But the bitter war it fought with Israel in 2006 was so destructive that Hizbullah has refrained since then from starting another one. And Lebanon, with its collapsing economy, is in no shape to deal with another calamity. Hizbullah’s patron, Iran, also seems to want it to keep its satellite’s powder dry; the thousands of rockets it has provided to Hizbullah are intended to deter Israel from bombing Iran’s nuclear programme. And for all its rhetoric, Iran has never gone to war for the Palestinians. “We know we’re a tool [of Iran],” says the Gaza official, noting that Hamas and Iran lie on opposite sides of Islam’s sectarian divide between Shias and Sunnis. “At the end of day we just have a <em>zawaj muta’</em>, a temporary marriage.”</p>
+<p>In an attempt to avoid opening another front, Israeli officials have played down the role of Iran and Hizbullah. But the axis has done little to disguise its gloating at Israel and support for Hamas. On October 9th the <em>Wall Street Journal</em> quoted two unnamed officials from Iran and Hizbullah saying that the Islamic Republic had plotted the attack for weeks. It noted that Ismail Qaani, the head of the foreign arm of Iran’s Islamic Revolutionary Guard Corps, had repeatedly met with Hizbullah’s leaders and Hamas officials, including Saleh al-Arouri, its representative in Beirut, ahead of the attack. Yet this version of events probably overstates Iran’s role. Although Hamas gets arms and training from Iran, the Palestinian group insists that it alone decides whether and when to launch operations. In any case, it had many reasons of its own for attacking.</p>
+<p>Iran’s main concern is that the region is slipping out of its orbit into America’s and Israel’s. Saudi Arabia and Israel have both said publicly that they are taking steps towards establishing diplomatic relations and that these are being underwritten by security guarantees from America. Further progress was expected with the visit of a third Israeli cabinet minister to Riyadh later this month. Just days before this attack started Iran’s supreme leader, Ayatollah Ali Khamenei, warned that countries establishing relations with Israel were putting themselves “in harm’s way”.</p>
+<p>Indeed, after a period of relative calm in the region, Iran’s allies are renewing hostilities on several fronts. The Houthis, the Shia armed group that controls Yemen’s capital, recently staged their first cross-border attack on Saudi Arabia for months. Militias aligned with Iran in eastern Syria have also lobbed rockets at American bases and encouraged Arab tribes in the region to rebel against local Kurdish control.</p>
+<p>Still, pressure on other members of the axis to do more may increase as the fighting in Gaza intensifies. Two months ago Hizbullah conducted a much-hyped military exercise in southern Lebanon in which it practised capturing Israeli towns. That Hamas has now done so “puts them under pressure”, says Hilal Khashan, a Lebanese security expert. The day after Hamas launched its attack, Hizbullah shelled three Israeli positions on the Sheba’a farms, a parcel of contested land in the foothills of the Golan Heights. The location of this attack appears designed to assuage the movement’s hotheads, while also signalling to Israel that it wants to avoid escalation. The question is how long that complex calculation holds. ■</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+                         <center><span><strong>我与山河皆无恙,满眼星河都是你</strong>.</span></center>
+                
+            </section>
+        
+         <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="#"># Top</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">Back</a>
+                <span> & </span>
+                <a href="/">Home</a>
+            </div>
+        </section> 
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2023/11/12/Ubuntu%E7%B3%BB%E7%BB%9F%E5%AE%89%E8%A3%85/">系统安装教程</a>
+            
+            
+            <a class="next" rel="next" href="/2023/10/01/%E5%9B%BD%E5%BA%86%E6%B8%B8%E7%8E%A9%E8%AE%B0%E5%BD%95/">国庆游玩记录</a>
+            
+        </section>
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+         <span>© <a href="https://github.com/" target="_blank">Chenghua</a></span> | Hosted on <a href="https://github.com/" target="_blank">Github Pages</a></span>
+    </div>
+</footer>
+
+    </div>
+
+    <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="Searching..." class="form-input" onchange="inputChange(event)" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+</body>
+
+</html>

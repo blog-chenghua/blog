@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="google-site-verification" content="koFxmEYwvDDlW78oBJ3uN6VHYCEw__3w3lVITK79cWE" />
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Cheng Hua">
+
+
+
+    <meta name="description" content="blog-chenghua">
+
+
+
+<title>博客测试图片 | Chenghua&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search');
+        const menuToggle = $('.menu-toggle');
+        const title = $('.navbar-header-title ');
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+            menuToggle.addClass("open-search")
+            title.addClass("mobile-title-hidden")
+        } else {
+            search.removeClass("mobile-search");
+            menuToggle.removeClass("open-search")
+            // title.css({visibility: 'visible'})
+            title.removeClass("mobile-title-hidden")
+        } 
+
+       
+    }
+
+    function inputChange(e) {
+        const value = e.target.value;
+        const pc = $('#pc-search-input');
+        const mobile = $('#mobile-search-input');
+        const modalInput = $('#modal-form-input');
+        // 其中一个搜索框修改要更改另外两个搜索框
+        const inputArray = [pc, mobile, modalInput];
+        // modalInput.val("fuck")
+        for(let i = 0; i < inputArray.length; i++) {
+            if(e.target === inputArray[i][0]) {
+                continue;
+            }
+            inputArray[i].val(value);
+        }
+        
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json";
+        $(formEl).submit(function(e){
+            if(e && e.preventDefault){
+                e.preventDefault();
+            }else{
+                window.event.returnValue = false;
+            }
+            
+            const modalInput = $('#modal-form-input');
+         
+            if(!flag && modalInput.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+                $(".form-input").focus();
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            visibility: 'visible'
+                        });
+                    },
+                    success: function( datas ) {
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data) {
+                            var isMatch = true;
+                            var data_title = data.title && data.title.trim().toLowerCase() || 'Untitled';
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                            const loadingBar = $('.search-loading-bar') 
+                            loadingBar.css({
+                                visibility: 'hidden',
+                            });
+                        }, 300)
+                    }
+                });
+            })
+        
+        });
+    }
+    
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+<meta name="generator" content="Hexo 6.3.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+<link rel="alternate" href="/atom.xml" title="Chenghua's Blog" type="application/atom+xml">
+</head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Chenghua&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Search" autocomplete="off" onchange="inputChange(event)" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div class="navbar-header-title">
+                    <a href="/">Chenghua&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="navbar-mobile-right">
+                    
+                    
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Search" autocomplete="off" onchange="inputChange(event)" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+
+    
+            </div>
+           
+        </div>
+    </nav>
+
+</header>
+
+            <div class="main">
+                <div class="container">
+    
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">博客测试图片</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/about">Cheng Hua</a>
+                    
+                    
+                    
+                        <span class="post-time">
+                        Date: <a href="#">August 30, 2023&nbsp;&nbsp;0:00:00</a>
+                        </span>
+                    
+                    
+                        
+                        <span class="post-count">
+                        Words:
+                        <a href="">754</a> 
+                        </span>
+                        
+                        
+                        <span class="post-count">
+                        Time:
+                        <a href="">2min</a> 
+                        </span>
+                        
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p><img src="https://img.chenghua.icu/file/ca4792c4c663a6af33db7.jpg" alt="Nature"></p>
+<h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>在这喧嚣的世界里，我们时常被琐碎的事务和快节奏的生活所累。在城市的喧嚣中，我们是否曾迷失了内心的方向？或许有一天，我们都需要停下脚步，走进内心深处，去发现那些被遗忘的美好。</p>
+<h3 id="自然之美"><a href="#自然之美" class="headerlink" title="自然之美"></a>自然之美</h3><p>当我踏足大自然的怀抱，一股温暖的力量充盈着我心。山间的绿意，湖畔的清风，让我忘却尘世的喧嚣，沉浸在大自然的美丽中。大自然是上天赐予我们最宝贵的礼物，她的美是那样朴实而又绚丽，让人流连忘返。</p>
+<p>每一次漫步在森林中，我感受到树木与土地的呼吸，仿佛与大自然融为一体。那一刻，我明白了人类与自然之间的深刻关联。我们需要呵护自然，去感受她的美丽与力量，因为她的存在是我们生命中不可或缺的一部分。</p>
+<h3 id="艺术的灵魂"><a href="#艺术的灵魂" class="headerlink" title="艺术的灵魂"></a>艺术的灵魂</h3><p>艺术是心灵的语言，是将内心情感与思想抒发的最纯粹方式。当我走进美术馆，看着那些画作中流淌的情感，我仿佛也与艺术家心灵相通。艺术家用他们的笔触和色彩，勾勒出一个个神奇的世界，让我们感受到不同的情感和体验。</p>
+<p>音乐是另一种触动心灵的艺术形式。当我闭上眼睛，倾听着优美的旋律，我仿佛飘荡在音符的海洋中。音乐能够治愈我们的伤痛，点燃我们的希望，让我们在无声的世界里找到情感的出口。</p>
+<h3 id="灵感的源泉"><a href="#灵感的源泉" class="headerlink" title="灵感的源泉"></a>灵感的源泉</h3><p>对于一个创作者而言，灵感是无价的财富。然而，灵感并非来自外界，而是深藏在我们内心的宝藏。只有当我们学会倾听自己的内心，才能够找到真正属于自己的灵感之源。</p>
+<p>在日常生活中，我们可以尝试冥想和放松，以平静内心的波澜。当我们静心思考，拥抱宁静时，那些被埋藏的灵感就会悄然浮现。或许在一次偶然的邂逅中，或是一个不经意的瞬间，灵感的火花就会在我们心中闪现。</p>
+<h3 id="生活的意义"><a href="#生活的意义" class="headerlink" title="生活的意义"></a>生活的意义</h3><p>人生不只是追求物质的富足，更是追求心灵的满足。在这个瞬息万变的世界里，我们常常忽略了内心真正的渴望。是时候让我们重新审视自己的内心，追求那些能够给予我们真正满足感的事物。</p>
+<p>走进大自然，感受她的美；欣赏艺术，感受灵魂的触动；深藏心灵，寻找灵感的踪迹。让我们共同踏上心灵的旅程，追寻内心的美，感悟生命的意义。</p>
+<p>愿我们在这心灵之旅中，不断发现生命的美好与奇迹！</p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+                         <center><span><strong>我与山河皆无恙,满眼星河都是你</strong>.</span></center>
+                
+            </section>
+        
+         <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="#"># Top</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">Back</a>
+                <span> & </span>
+                <a href="/">Home</a>
+            </div>
+        </section> 
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2023/08/30/%E5%8D%9A%E5%AE%A2%E6%B5%8B%E8%AF%95%E8%A7%86%E9%A2%91/">博客测试视频</a>
+            
+            
+            <a class="next" rel="next" href="/2023/08/30/%E5%8D%9A%E5%AE%A2%E6%B5%8B%E8%AF%95%E9%9F%B3%E9%A2%91/">博客测试音频</a>
+            
+        </section>
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+         <span>© <a href="https://github.com/" target="_blank">Chenghua</a></span> | Hosted on <a href="https://github.com/" target="_blank">Github Pages</a></span>
+    </div>
+</footer>
+
+    </div>
+
+    <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="Searching..." class="form-input" onchange="inputChange(event)" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+</body>
+
+</html>

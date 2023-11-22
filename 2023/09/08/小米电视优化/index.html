@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="google-site-verification" content="koFxmEYwvDDlW78oBJ3uN6VHYCEw__3w3lVITK79cWE" />
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Cheng Hua">
+
+
+
+    <meta name="description" content="blog-chenghua">
+
+
+
+<title>小米电视优化 | Chenghua&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search');
+        const menuToggle = $('.menu-toggle');
+        const title = $('.navbar-header-title ');
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+            menuToggle.addClass("open-search")
+            title.addClass("mobile-title-hidden")
+        } else {
+            search.removeClass("mobile-search");
+            menuToggle.removeClass("open-search")
+            // title.css({visibility: 'visible'})
+            title.removeClass("mobile-title-hidden")
+        } 
+
+       
+    }
+
+    function inputChange(e) {
+        const value = e.target.value;
+        const pc = $('#pc-search-input');
+        const mobile = $('#mobile-search-input');
+        const modalInput = $('#modal-form-input');
+        // 其中一个搜索框修改要更改另外两个搜索框
+        const inputArray = [pc, mobile, modalInput];
+        // modalInput.val("fuck")
+        for(let i = 0; i < inputArray.length; i++) {
+            if(e.target === inputArray[i][0]) {
+                continue;
+            }
+            inputArray[i].val(value);
+        }
+        
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json";
+        $(formEl).submit(function(e){
+            if(e && e.preventDefault){
+                e.preventDefault();
+            }else{
+                window.event.returnValue = false;
+            }
+            
+            const modalInput = $('#modal-form-input');
+         
+            if(!flag && modalInput.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+                $(".form-input").focus();
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            visibility: 'visible'
+                        });
+                    },
+                    success: function( datas ) {
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data) {
+                            var isMatch = true;
+                            var data_title = data.title && data.title.trim().toLowerCase() || 'Untitled';
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                            const loadingBar = $('.search-loading-bar') 
+                            loadingBar.css({
+                                visibility: 'hidden',
+                            });
+                        }, 300)
+                    }
+                });
+            })
+        
+        });
+    }
+    
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+<meta name="generator" content="Hexo 6.3.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+<link rel="alternate" href="/atom.xml" title="Chenghua's Blog" type="application/atom+xml">
+</head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Chenghua&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Search" autocomplete="off" onchange="inputChange(event)" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div class="navbar-header-title">
+                    <a href="/">Chenghua&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="navbar-mobile-right">
+                    
+                    
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Search" autocomplete="off" onchange="inputChange(event)" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+
+    
+            </div>
+           
+        </div>
+    </nav>
+
+</header>
+
+            <div class="main">
+                <div class="container">
+    
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">小米电视优化</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/about">Cheng Hua</a>
+                    
+                    
+                    
+                        <span class="post-time">
+                        Date: <a href="#">September 8, 2023&nbsp;&nbsp;9:00:00</a>
+                        </span>
+                    
+                    
+                        
+                        <span class="post-count">
+                        Words:
+                        <a href="">2.5k</a> 
+                        </span>
+                        
+                        
+                        <span class="post-count">
+                        Time:
+                        <a href="">9min</a> 
+                        </span>
+                        
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <center>小米电视系列系统优化教程</center>
+
+<p>本教程旨在通过使用ADB（Android Debug Bridge）开发者工具包来卸载和更换小米电视系统预装的应用程序或系统组件，以减少系统资源占用，提高电视启动和响应速度，提供更纯粹的电视体验。以下是优化小米电视系统的基本步骤：</p>
+<p><strong>说明：由于本教程没有对小米电视系统进行ROOT权限获取，也没有删除或更改系统关键进程，系统通常不会因为卸载应用程序或更改桌面环境而崩溃，但并不排除个人操作不当导致的问题，本网站或服务提供商将不承担由此引起的责任。</strong></p>
+<p><strong>注意：这是一个高级操作，务必充分观看教程之后再操作，建议在进行操作之前备份重要数据，并在需要时恢复出厂设置。此外，要特别小心，不要禁用系统关键组件，以免造成不可修复的问题。</strong></p>
+<p>1.<strong>准备工作：</strong></p>
+<ul>
+<li>用户需要一台计算机，并提前安装好ADB工具。ADB是Android开发工具包的一部分，用户可以从附件一中下载并解压到指定文件夹(尽量解压至磁盘根目录，例如<code>D://Xiaomi</code>)。</li>
+<li>启用小米电视上的开发者选项：在电视的设置中，找到“关于电视”，然后多次点击“版本号”以解锁开发者选项。</li>
+<li>启用小米电视上的开发者选项：在电视的设置中，找到“账号与安全”，将<strong>ADB调试</strong>设置为<strong>允许</strong>，将<strong>允许安装未知来源应用</strong>设置成<strong>允许</strong>。</li>
+<li>下载第三方桌面：在这里，推荐使用纯净版的”当贝桌面”，用户可以从附件二中获取第三方桌面应用。</li>
+</ul>
+<p>2.<strong>连接电视：</strong></p>
+<ul>
+<li>保证电视和计算机处于同一个局域网之内。</li>
+<li>打开电视设置-网络设置-选择连接的网络-记录下电视的IP地址(IPV4）。</li>
+</ul>
+<p>获取设备连接：</p>
+<ul>
+<li><p>以Windows系统为例，打开命令提示符，定位到附件一解压的文件夹位置，具体的操作步骤如下：</p>
+<ol>
+<li>打开CMD命令提示符。</li>
+<li>在命令提示符中首先输入目标盘符命令，例如<code>D：</code>。</li>
+<li>然后进入由附件一解压的文件夹，例如<code>cd: \Xiaomi</code>。</li>
+<li>按回车键，即可进入该目录。</li>
+</ol>
+</li>
+<li><p>运行ADB命令<code>adb connect 192.168.*.*</code>，其中192.168. * . * 为小米电视的IP地址。连接计算机，此时电视屏幕上会弹出一个提示框“允许USB调试吗？”，电视遥控器勾选<strong>一律允许。</strong></p>
+</li>
+<li><p>如果此步骤连接失败，那么需要将电视与计算机通过USB线连接，并确保USB调试选项在开发者选项中已启用，重新获取设备连接。</p>
+</li>
+<li><p>运行ADB命令<code>adb devices</code>来确认电视是否正确连接到计算机：</p>
+</li>
+<li><p>若命令行出现相关信息<code>List of devices attached</code>，则表示连接成功：</p>
+</li>
+</ul>
+<p>3.<strong>小米电视系统初步优化：</strong></p>
+<ul>
+<li><p>根据下面代码，在命令行中按此推荐卸载系统自带软件，完成小米电视系统的局部优化，按回车键执行该行代码：</p>
+<figure class="highlight scss"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">adb shell pm uninstall <span class="attr">--user</span> <span class="number">0</span> com<span class="selector-class">.miui</span><span class="selector-class">.systemAdSolution</span> <span class="comment">//广告插件</span></span><br><span class="line">adb shell pm uninstall <span class="attr">--user</span> <span class="number">0</span> com<span class="selector-class">.xiaomi</span><span class="selector-class">.mitv</span><span class="selector-class">.upgrade</span> <span class="comment">//系统升级</span></span><br><span class="line">adb shell pm uninstall <span class="attr">--user</span> <span class="number">0</span> com<span class="selector-class">.duokan</span><span class="selector-class">.videodaily</span> <span class="comment">//视频头条</span></span><br><span class="line">adb shell pm uninstall <span class="attr">--user</span> <span class="number">0</span> com<span class="selector-class">.xiaomi</span><span class="selector-class">.mitv</span><span class="selector-class">.shop</span> <span class="comment">//小米商城</span></span><br><span class="line">adb shell pm uninstall <span class="attr">--user</span> <span class="number">0</span> com<span class="selector-class">.xiaomi</span><span class="selector-class">.tv</span><span class="selector-class">.gallery</span> <span class="comment">//时尚画报</span></span><br><span class="line">adb shell pm uninstall <span class="attr">--user</span> <span class="number">0</span> com<span class="selector-class">.mitv</span><span class="selector-class">.alarmcenter</span> <span class="comment">//定时提醒</span></span><br><span class="line">adb shell pm uninstall <span class="attr">--user</span> <span class="number">0</span> com<span class="selector-class">.xiaomi</span><span class="selector-class">.mitv</span><span class="selector-class">.payment</span> <span class="comment">//小米支付</span></span><br><span class="line">adb shell pm uninstall <span class="attr">--user</span> <span class="number">0</span> com<span class="selector-class">.xiaomi</span><span class="selector-class">.mitv</span><span class="selector-class">.pay</span> <span class="comment">//电视支付</span></span><br><span class="line">adb shell pm uninstall <span class="attr">--user</span> <span class="number">0</span> com<span class="selector-class">.xiaomi</span><span class="selector-class">.mibox</span><span class="selector-class">.gamecenter</span> <span class="comment">//游戏中心</span></span><br><span class="line">adb shell pm uninstall <span class="attr">--user</span> <span class="number">0</span> com<span class="selector-class">.xiaomi</span><span class="selector-class">.mitv</span><span class="selector-class">.calendar</span> <span class="comment">//日历</span></span><br><span class="line">adb shell pm uninstall <span class="attr">--user</span> <span class="number">0</span> com<span class="selector-class">.xiaomi</span><span class="selector-class">.tweather</span> <span class="comment">//天气</span></span><br><span class="line">adb shell pm uninstall <span class="attr">--user</span> <span class="number">0</span> com<span class="selector-class">.android</span><span class="selector-class">.location</span><span class="selector-class">.fused</span> <span class="comment">//位置信息</span></span><br><span class="line">adb shell pm uninstall <span class="attr">--user</span> <span class="number">0</span> com<span class="selector-class">.xiaomi</span><span class="selector-class">.mitv</span><span class="selector-class">.appstore</span> <span class="comment">//应用商店</span></span><br><span class="line">adb shell pm uninstall <span class="attr">--user</span> <span class="number">0</span> com<span class="selector-class">.xiaomi</span><span class="selector-class">.mitv</span><span class="selector-class">.tvpush</span><span class="selector-class">.tvpushservice</span> <span class="comment">//电视推送</span></span><br><span class="line">adb shell pm uninstall <span class="attr">--user</span> <span class="number">0</span> com<span class="selector-class">.mipay</span><span class="selector-class">.wallet</span><span class="selector-class">.tv</span> <span class="comment">//小米钱包</span></span><br><span class="line">adb shell pm uninstall <span class="attr">--user</span> <span class="number">0</span> com<span class="selector-class">.xiaomi</span><span class="selector-class">.mitv</span><span class="selector-class">.handbook</span> <span class="comment">//用户手册</span></span><br></pre></td></tr></tbody></table></figure></li>
+</ul>
+<p>4.<strong>小米电视系统进阶优化：</strong></p>
+<ul>
+<li>根据小米电视系统的安卓系统版本（设置-关于-设备信息）确认是否需要第三方软件锁定桌面。</li>
+</ul>
+<p><font color="blue"><strong>情况一：</strong> </font>新版小米电视系统（<strong>安卓版本7及以上</strong>）</p>
+<p>首先，用户需要<strong>确保已经安装第三方桌面并在其设置中开启自启动项</strong>后，如果在安装第三方桌面应用过程中，电视提示”选择主屏幕应用“的选项，用户可以无视此选项，直接操控电视遥控器的返回键即可。<font color="red">（新版小米电视系统若不经过软件解锁的话，直接选择第三方桌面作为主屏幕应用，会触发系统保护机制出现电视重启后灰屏的现象，目前仅能通过恢复出厂设置的方式来解决。）</font></p>
+<p>使用Launcher Manager Ultimate来切换到第三方桌面，然后再卸载系统桌面，这将允许用户自定义和使用不同的桌面环境。其中Launcher Manager Ultimate软件已经集成到附件一中，不需要单独下载。具体操作如下：</p>
+<p>  1.完成小米系统基础优化之后回到小米桌面，确保电视ADB调试开的情况，在程序里运行Launcher Manager Ultimate，此时active launcher界面会显示当前锁定的为”桌面“，即系统桌面，此时需要用户自行解除锁定，选择disable stock launcher按钮，之后按照英文提示信息等待约十秒后，重启电视。</p>
+<p>  2.重新启动电视后，系统会自动关闭ADB调试权限，此时用户需要按照上一步骤内容重新开启ADB调试，回到第三方桌面，在程序中重新运行Launcher Manager Ultimate，此时用户选择disable stock launcher按钮 ，此时active launcher界面会显示我们选择的第三方桌面。</p>
+<p>  3.确保已经安装并锁定第三方桌面之后，重新连接电视并使用终端命令行来完成系统桌面的卸载。</p>
+<p><font color="blue"><strong>情况二：</strong></font> 老版小米电视系统（<strong>安卓版本7及以下</strong>）</p>
+<p>首先，用户需要<strong>确保已经安装第三方桌面并在其设置中开启自启动项</strong>后，重新连接电视并使用终端命令行来完成系统桌面的卸载。</p>
+<ul>
+<li><p>根据情况一和情况二所述，用户在卸载系统桌面之前需要确认系统中已经存在安装的第三方桌面。</p>
+</li>
+<li><p>卸载系统桌面命令，需要用户谨慎操作：<code>adb shell pm uninstall --user 0 com.mitv.tvhome </code></p>
+</li>
+<li><p>至此完成小米电视的全部优化内容，包括卸载或禁用预装的应用程序或系统组件以及更换第三方桌面。</p>
+</li>
+</ul>
+<p>5.<strong>小米电视系统的恢复：</strong> </p>
+<ul>
+<li>如果在删除系统内置应用程序并卸载小米电视系统桌面的过程中出现问题或失败，可以参照以下方法将小米电视恢复出厂设置。</li>
+</ul>
+<p>1.在主屏幕界面可以长按设置键呼出侧边栏，进入设置进行系统重置。</p>
+<p>2.对于小米电视，关闭电视电源-按住“确认键+返回键”-对准电视灯条-重新插入电源插头。之后电视会自动启动，出现小米白色LOGO，进入REC模式，选择清空所有数据，再选择重新启动即可。</p>
+<p>3.对于红米电视，关闭电视电源-按住“主页键+菜单键”-对准电视灯条-重新插入电源插头。之后电视会自动启动，出现小米白色LOGO，进入REC模式，选择清空所有数据，再选择重新启动即可。</p>
+<hr>
+<p><strong><font color="red">在小米电视优化过程中谨记先下载安装第三方桌面并解除小米电视锁定桌面的限制，然后通过电视的ADB授权，优化系统内置的应用，最后才能卸载系统桌面，达到最终精简的目的。</font></strong></p>
+<p><font color="blue">针对动手能力比较弱的用户</font>，可以直接双击附件一中的批处理文件”Xiaomi.bat”,按照命令行提示，对小米电视系统进行优化，系统优化过程中无需人工干预。不过需注意的是批处理文件完成的仅仅是小米系统的初步优化、安装第三方桌面应用以及安装Launcher Manager Ultimate应用，并不包括卸载系统桌面等小米系统的 进阶优化。</p>
+<p><font color="blue">针对动手能力比较强的用户</font>，可以参照网络上的小米电视系统包名称，<strong>继续按需删除或者优化小米电视系统内置程序包</strong>，服务提供商仅推荐优化开机广告、视频头条、系统更新等这些软件，在此过程中<strong>不要卸载系统关键组件</strong>，以免造成不可修复的问题。在附件一中文件名称为Xiaomiad的文本文件，里面记录着小米电视系统常用的广告域名，可以将广告域名内容复制到路由器的内网Hosts屏蔽地址，实现网络层面的屏蔽小米电视系统所推送的广告。</p>
+<p><strong>如果对上述教程依然不理解，屡屡失败但是渴望继续对小米电视系统优化的用户，推荐下载附件三中的电视调试助手。电视调试助手主要以界面化的形式展示，对于新手比较友好，实际的小米电视优化思想相同。</strong></p>
+<p>小米电视系统优化软件及程序包：</p>
+<ul>
+<li><strong><a href="https://filedoge.com/download/c9c8c88e224656a205623a38a982ff0f24b35a8704fd17344e20b331866ece5eea418c4848e63766ba79">附件一</a></strong></li>
+<li><strong><a href="https://filedoge.com/download/9a2b75edf7474d526d7e00b8e0eb59cdf4143c3ab70d51b3fe9616f5484e598474f66eb50ec0878e31ea">附件二</a></strong></li>
+<li><strong><a href="https://filedoge.com/download/8734ee9bd762954da2e290c27712be9aa40f1e4dea4daff8744605e13e5d5927f922783ac895d5c83dca">附件三</a></strong></li>
+</ul>
+<p>小米电视系统推荐点播软件：</p>
+<ul>
+<li><strong><a href="https://share.feijipan.com/s/STU1W7yF">附件四</a></strong></li>
+</ul>
+<p>小米电视系统推荐直播软件：</p>
+<ul>
+<li><strong><a href="https://filedoge.com/download/f412f82f09d495ce33fe19916fd8128090aff1210e7ca79a394b27cd6ed6a3e13e202ec78089ba078c48">附件五</a></strong></li>
+</ul>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+                         <center><span><strong>我与山河皆无恙,满眼星河都是你</strong>.</span></center>
+                
+            </section>
+        
+         <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="#"># Top</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">Back</a>
+                <span> & </span>
+                <a href="/">Home</a>
+            </div>
+        </section> 
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2023/09/21/%E5%AE%9E%E9%AA%8C%E5%AE%A4%E8%B7%AF%E7%94%B1%E5%99%A8/">路由刷机教程</a>
+            
+            
+            <a class="next" rel="next" href="/2023/09/06/%E5%AE%9E%E9%AA%8C%E5%9B%A2%E9%98%9F%E4%BB%8B%E7%BB%8D/">实验团队介绍</a>
+            
+        </section>
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+         <span>© <a href="https://github.com/" target="_blank">Chenghua</a></span> | Hosted on <a href="https://github.com/" target="_blank">Github Pages</a></span>
+    </div>
+</footer>
+
+    </div>
+
+    <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="Searching..." class="form-input" onchange="inputChange(event)" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+</body>
+
+</html>

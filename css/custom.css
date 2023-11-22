@@ -1,0 +1,9 @@
+.dark-theme .post-content figure,
+.dark-theme .post-content figure.highlight .code pre {
+  background-color: $dark-post-blockquote-background-color;
+  color: $dark-font-color;
+}
+.dark-theme .post-content figure.highlight .gutter pre {
+  background-color: $dark-post-blockquote-background-color;
+  color: $dark-font-secondary-color;
+}

@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="google-site-verification" content="koFxmEYwvDDlW78oBJ3uN6VHYCEw__3w3lVITK79cWE" />
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Cheng Hua">
+
+
+
+    <meta name="description" content="blog-chenghua">
+
+
+
+<title>路由刷机教程 | Chenghua&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search');
+        const menuToggle = $('.menu-toggle');
+        const title = $('.navbar-header-title ');
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+            menuToggle.addClass("open-search")
+            title.addClass("mobile-title-hidden")
+        } else {
+            search.removeClass("mobile-search");
+            menuToggle.removeClass("open-search")
+            // title.css({visibility: 'visible'})
+            title.removeClass("mobile-title-hidden")
+        } 
+
+       
+    }
+
+    function inputChange(e) {
+        const value = e.target.value;
+        const pc = $('#pc-search-input');
+        const mobile = $('#mobile-search-input');
+        const modalInput = $('#modal-form-input');
+        // 其中一个搜索框修改要更改另外两个搜索框
+        const inputArray = [pc, mobile, modalInput];
+        // modalInput.val("fuck")
+        for(let i = 0; i < inputArray.length; i++) {
+            if(e.target === inputArray[i][0]) {
+                continue;
+            }
+            inputArray[i].val(value);
+        }
+        
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json";
+        $(formEl).submit(function(e){
+            if(e && e.preventDefault){
+                e.preventDefault();
+            }else{
+                window.event.returnValue = false;
+            }
+            
+            const modalInput = $('#modal-form-input');
+         
+            if(!flag && modalInput.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+                $(".form-input").focus();
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            visibility: 'visible'
+                        });
+                    },
+                    success: function( datas ) {
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data) {
+                            var isMatch = true;
+                            var data_title = data.title && data.title.trim().toLowerCase() || 'Untitled';
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                            const loadingBar = $('.search-loading-bar') 
+                            loadingBar.css({
+                                visibility: 'hidden',
+                            });
+                        }, 300)
+                    }
+                });
+            })
+        
+        });
+    }
+    
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+
+<meta name="generator" content="Hexo 6.3.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+<link rel="alternate" href="/atom.xml" title="Chenghua's Blog" type="application/atom+xml">
+</head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Chenghua&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Search" autocomplete="off" onchange="inputChange(event)" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div class="navbar-header-title">
+                    <a href="/">Chenghua&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="navbar-mobile-right">
+                    
+                    
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Search" autocomplete="off" onchange="inputChange(event)" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+
+    
+            </div>
+           
+        </div>
+    </nav>
+
+</header>
+
+            <div class="main">
+                <div class="container">
+    
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">路由刷机教程</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/about">Cheng Hua</a>
+                    
+                    
+                    
+                        <span class="post-time">
+                        Date: <a href="#">September 21, 2023&nbsp;&nbsp;18:05:33</a>
+                        </span>
+                    
+                    
+                        
+                        <span class="post-count">
+                        Words:
+                        <a href="">1.9k</a> 
+                        </span>
+                        
+                        
+                        <span class="post-count">
+                        Time:
+                        <a href="">6min</a> 
+                        </span>
+                        
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <center>360 P2路由器刷机教程</center>
+
+<p>如果你有一款闲置的路由器，并且已经确定它的硬件支持刷机，那么可以考虑刷入自定义固件，以改善其性能或增加功能。演示中我采用的是360 P2型号的无线路由器，刷入的是潘多拉固件。通常情况下，要成功刷机需要芯片厂商提供一定的开源支持。</p>
+<p>请注意，刷机有风险，可能会导致设备不可用，因此请仔细遵循相关的教程和指南，确保具备足够的技术知识，并愿意承担潜在的风险。同时，了解刷机可能会导致保修失效，所以请在明白这些风险的前提下决定是否继续。</p>
+<h3 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h3><ul>
+<li><p>下载所需的第三方固件，如潘多拉、老毛子、不死鸟固件。</p>
+</li>
+<li><p>确保了解路由器型号、硬件版本以及当前固件版本。</p>
+</li>
+<li><p>下载并准备好刷机工具，通常需要使用Breed刷机工具。</p>
+<p>360降级固件:<a href="https://git.opclash.com/download/360p2/360POP-P2-V1.0.25.36330.bin">360POP-P2-V1.0.25.36330.bin</a></p>
+<p>360调试固件:<a href="https://git.opclash.com/download/360p2/360POP-P2-DEBUG-V1.0.42.42668.bin">360POP-P2-DEBUG-V1.0.42.42668.bin</a></p>
+<p>Hfs文件服务器:<a href="https://git.opclash.com/gongju/hfs.exe">hfs.exe</a></p>
+<p>Putty连接工具:<a href="https://git.opclash.com/gongju/Putty-0.7.rar">Putty-0.7.rar</a></p>
+<p>Breed引导程序:<a href="https://git.opclash.com/download/360p2/breed-mt7628-hiwifi-hc5661a.bin">breed-mt7628-hiwifi-hc5661a.bin</a></p>
+<p>Pandora固件:<a href="https://git.opclash.com/download/360p2/PandoraBox-ralink-mt7628-360safe-p2-squashfs-sysupgrade-2016-09-22-git-3f0accd.bin">PandoraBox-ralink-mt7628-360safe-p2.bin</a></p>
+</li>
+</ul>
+<h3 id="降级固件版本："><a href="#降级固件版本：" class="headerlink" title="降级固件版本："></a><strong>降级固件版本</strong>：</h3><ul>
+<li><p>确保将路由器固件版本降级到兼容的版本，需要寻找特定版本的官方固件，然后进行降级。</p>
+<p>1、登录 360 P2 路由器管理后台，在防火墙设置 -&gt; 高级设置 -&gt; 系统升级页面处，将360 P2路由器的固件降级至 1.0.25 版本，等待上传文件完成后重启降级，不降级直接降级调试版本，会提示升级包错误，如下图：</p>
+<p><img src="https://img.chenghua.icu/file/1f9c4f3235e96cd0ea6a4.png" alt="pic1"></p>
+<p>2、降级 1.0.25 版本成功后，再通过登录 360路由器 管理后台，在防火墙设置 -&gt; 高级设置 -&gt; 系统升级，选择手动升级将 360POP-P2-DEBUG-V1.0.42.42668.bin 上传并开始降级，升级完成后设备会自动重启，如下图：</p>
+<p><img src="https://img.chenghua.icu/file/c74cca3bc2ed17bb0c5fd.png" alt="pic2"></p>
+</li>
+</ul>
+<h3 id="备份配置："><a href="#备份配置：" class="headerlink" title="备份配置："></a><strong>备份配置</strong>：</h3><ul>
+<li>在刷机之前，务必要备份路由器配置，以防止数据丢失。登录路由器的管理界面中完成。</li>
+</ul>
+<h3 id="刷入Breed固件："><a href="#刷入Breed固件：" class="headerlink" title="刷入Breed固件："></a><strong>刷入Breed固件</strong>：</h3><ul>
+<li><p>Breed是一种用于刷写第三方固件的引导程序。需要使用hfs文件服务器将Breed引导程序刷入路由器中，确保它能够取代原厂的引导程序。</p>
+<p>1、将下载好的 hfs.exe 双击打开，把breed-mt7628-hiwifi-hc5661a.bin拖动到 hfs 的左框中，注意地址是否为 <code>192.168.0.2</code>，确认无误后，将地址复制出来，此时不要关闭 HFS 文件管理器，最小化即可，如下图：</p>
+<p><img src="https://img.chenghua.icu/file/4ca75bd74ef5d5840696e.png" alt="pic3"></p>
+<p>2、解压 Putty-0.7 压缩包，找到 Putty.exe 双击打开，使用Telnet 连接 360 P2 路由器，<code>Login：admin，Password ：12345678</code>，如下图：</p>
+<p><img src="https://img.chenghua.icu/file/05a9c895001155bb2b1b8.png" alt="pic4"></p>
+<p>3、使用 Telnet 成功登陆后，依次执行以下命令，进行写入 Breed引导程序，**注意 wget 的下载地址要和你的 Hfs 文件管理器提供的地址一致 **，如下图：</p>
+<figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /tmp</span><br><span class="line">wget http://192.168.0.2:8080/breed-mt7628-hiwifi-hc5661a.bin</span><br><span class="line">mtd_write erase /dev/mtd1</span><br><span class="line"><span class="built_in">cat</span> breed-mt7628-hiwifi-hc5661a.bin &gt; /dev/mtd1</span><br></pre></td></tr></tbody></table></figure>
+
+<p><img src="https://img.chenghua.icu/file/18113c0030b27976c2f61.png" alt="pic4"></p>
+<p>4、执行完成命令，断开电源后按住 Reset 键然后再插上电源，按住 Reset 键不要松手，通电 10s 后松手，重新用网线连接上路由器后，在浏览器中里输入<code>192.168.1.1</code> 即可看到 Breed 管理界面，如下图：</p>
+<p><img src="https://img.chenghua.icu/file/93c4d0258843f7f186e79.png" alt="pic4"></p>
+</li>
+</ul>
+<h3 id="刷入第三方固件："><a href="#刷入第三方固件：" class="headerlink" title="刷入第三方固件："></a><strong>刷入第三方固件</strong>：</h3><ul>
+<li><p>使用Breed引导程序，刷入选择的第三方固件。</p>
+<p>1、将下载好Pandora固件，通过 Breed 控制台内的“固件更新”-“固件”-“选择文件”进行上传，闪存布局默认公版（0x50000），勾选自动重启并点击上传，等待进度条完成，如下图：</p>
+<p><img src="https://img.chenghua.icu/file/3527e4a0bb677fe2cdff7.png" alt="pic4"></p>
+</li>
+</ul>
+<h3 id="重启路由器："><a href="#重启路由器：" class="headerlink" title="重启路由器："></a><strong>重启路由器</strong>：</h3><ul>
+<li><p>安装完成后，重新启动路由器。等待一段时间，让新固件生效。</p>
+<p>1、重启完成，通过浏览器访问登陆网关进行Pandor固件的设置，默认的登录网关：192.168.1.1，默认用户名：root，默认密码：admin，设置根据自己习惯设置，如下图：</p>
+<p><img src="https://img.chenghua.icu/file/4c6a18731a533c636105b.png" alt="pic4"></p>
+</li>
+</ul>
+<h3 id="配置和测试："><a href="#配置和测试：" class="headerlink" title="配置和测试："></a><strong>配置和测试</strong>：</h3><ul>
+<li>访问新固件的管理界面，配置路由器以满足个人需求。</li>
+<li>测试路由器的功能确保一切正常工作。</li>
+</ul>
+<h3 id="恢复备份配置（可选）："><a href="#恢复备份配置（可选）：" class="headerlink" title="恢复备份配置（可选）："></a><strong>恢复备份配置</strong>（可选）：</h3><ul>
+<li>如果备份了原始配置，考虑将其还原到新固件中，以保留以前的设置。</li>
+</ul>
+<h3 id="其他进阶固件（可选）："><a href="#其他进阶固件（可选）：" class="headerlink" title="其他进阶固件（可选）："></a><strong>其他进阶固件</strong>（可选）：</h3><blockquote>
+<p><a href="https://opt.cn2qq.com/padavan/">Padavan固件</a>：老毛子固件是一种为路由器设备开发的第三方固件，通常这些固件通常基于开源项目，如OpenWRT或DD-WRT，经过优化和定制，为支持的路由器提供了更多功能和灵活性。Padavan固件的目标是提供稳定性、性能和功能上的改进，以增强路由器的性能和功能。</p>
+<p>对于开发人员，OpenWRT是使用框架来构建应用程序，而无需建立一个完整的固件来支持；对于用户来说，这意味着其拥有完全定制的能力，可以用前所未有的方式使用该设备。</p>
+</blockquote>
+<h3 id="锐捷认证（可选）："><a href="#锐捷认证（可选）：" class="headerlink" title="锐捷认证（可选）："></a><strong>锐捷认证</strong>（可选）：</h3><blockquote>
+<p><strong>锐捷</strong> ：锐捷认证客户端是款支持大多数的大学院校的网络认证程序,通过客户端软件实现上网的认证、计费、管理等功能。可以通过学生账号进行客户端的登录，从而正常的进行上网活动。支持大部分系统，兼容性强，是许多高校上网必备的客户端。</p>
+</blockquote>
+<blockquote>
+<p><a href="https://github.com/tkkcc/mentohust">MentoHUST</a>:华中科技大的朋友开发出来的一款第三方锐捷认证工具！</p>
+<p>1.MentoHUST是一个支持Windows、Linux、Mac OS下锐捷认证的程序（附带支持赛尔认证）</p>
+<p>2.Windows版MentoHUST支持Windows所有主流版本</p>
+<p>3.Linux版MentoHUST与Windows版兼容，所以如果能够在Windows下使用MentoHUST认证成功，就不必担心在Linux下无法使用校园网。</p>
+<p>4.Mac OS版MentoHUST是后来对Linux版MentoHUST在Mac OS上的编译。</p>
+</blockquote>
+<blockquote>
+<p><a href="http://www.putty.org/">PuTTY</a>:Windows和Unix平台的SSH和Telnet的免费实现，以及<code>xterm</code>终端仿真器。</p>
+</blockquote>
+<blockquote>
+<p><a href="https://winscp.net/eng/docs/lang:chs">WinSCP</a>: WinSCP是一个 Windows 环境下使用的 SSH 的开源图形化 SFTP 客户端。同时支持 SCP 协议。它的主要功能是在本地与远程计算机间安全地复制文件，并且可以直接编辑文件。 </p>
+</blockquote>
+<p>1.配置路由器固件。</p>
+<p>2.伪装电脑，正常启动官方的认证程序,连接之后查看自己的网卡物理地址，然后替换掉Padavan固件的外部网络设置里的物理地址（MAC）。</p>
+<p>3.开启路由器的SSH功能, 然后用WinSCP连接上路由器, 把官方认证程序的通讯协议文件（.mpf）传到路由器固件的<code>/etc/storage</code>文件夹下,然后到路由器的系统管理中,将<code>/etc/storage</code>文件夹的内容保存到闪存, 否则重启之后文件被自动删除。</p>
+<p>4.在固件的拓展功能中找到锐捷认证，正确输入账号和密码连接，然后需要配置认证选项,并填入正确的通讯协议文件路径即可。</p>
+<p><img src="https://img.chenghua.icu/file/0ccbd059c55bd83866bb8.png" alt="pic4"></p>
+<p><img src="https://img.chenghua.icu/file/b667704df9695192d9091.png" alt="pic4"></p>
+<h3 id="网络分享（工具）："><a href="#网络分享（工具）：" class="headerlink" title="网络分享（工具）："></a><strong>网络分享</strong>（工具）：</h3><p>在线工具:<a href="https://wificard.bdw.to/">📡 WiFi Card</a></p>
+<p>工具步骤:</p>
+<ol>
+<li>输入 WiFi 的网络名,即手机要连接的 WiFi 名字,如：<code>ChinaNet-XXXX</code>, <code>CMCC-XXXX</code>;</li>
+<li>输入对应 WiFi 的密码;</li>
+<li>分享二维码给家人、朋友、或同事;</li>
+</ol>
+<p>工具优点:</p>
+<ol>
+<li>一次生成（劳动）,永久适用（躺赢）;</li>
+<li>省掉 Network 中查找对应 WiFi名,并手动输入密码;</li>
+</ol>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+                         <center><span><strong>我与山河皆无恙,满眼星河都是你</strong>.</span></center>
+                
+            </section>
+        
+         <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="#"># Top</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">Back</a>
+                <span> & </span>
+                <a href="/">Home</a>
+            </div>
+        </section> 
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2023/09/25/%E7%BD%91%E7%AB%99%E4%B8%8A%E4%BC%A0%E6%96%87%E4%BB%B6/">网站上传文件</a>
+            
+            
+            <a class="next" rel="next" href="/2023/09/08/%E5%B0%8F%E7%B1%B3%E7%94%B5%E8%A7%86%E4%BC%98%E5%8C%96/">小米电视优化</a>
+            
+        </section>
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+         <span>© <a href="https://github.com/" target="_blank">Chenghua</a></span> | Hosted on <a href="https://github.com/" target="_blank">Github Pages</a></span>
+    </div>
+</footer>
+
+    </div>
+
+    <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="Searching..." class="form-input" onchange="inputChange(event)" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+</body>
+
+</html>
