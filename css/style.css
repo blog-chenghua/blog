@@ -476,6 +476,26 @@ input[type="radio"]:not(:checked) + label:after {
 }
 
 
+@font-face {
+  font-family: "iconfont"; /* Project id 4356299 */
+  src: url('iconfont.woff2?t=1701566445859') format('woff2'),
+       url('iconfont.woff?t=1701566445859') format('woff'),
+       url('iconfont.ttf?t=1701566445859') format('truetype');
+}
+
+.iconfont {
+  font-family: "iconfont" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-chat:before {
+  content: "\e6a5";
+}
+
+
 .header-logo a {
   padding: 0;
 }
