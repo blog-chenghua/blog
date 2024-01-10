@@ -338,7 +338,7 @@
                         
                         <span class="post-count">
                         Words:
-                        <a href="">942</a> 
+                        <a href="">968</a> 
                         </span>
                         
                         
@@ -405,14 +405,18 @@
 </blockquote>
 <div style="overflow:auto;width:100%"> <table width="auto" style="white-space:nowrap">
 <tbody><tr>
+<td> <div align="center"> <strong>名称</strong></div> </td> 
 <td> <div align="center"> <strong>分区</strong></div> </td> 
 <td> <div align="center"> <strong>挂载点</strong></div> </td>
 <td> <div align="center"> <strong>类型</strong></div> </td>
 <td> <div align="center"> <strong>备注</strong></div> </td>
 </tr>
 <tr><td>
-<div align="center">第一分区（Primary）</div> </td>
+<div align="center">第一分区</div> </td>
 
+  <td>
+<div align="center"></div>Primary</td>
+  
 <td>
     <div align="center">/boot</div> </td>
 
@@ -420,10 +424,13 @@
 <div align="center">Ext4</div> </td>
 
 <td>
-<div align="center">用于引导系统镜像，建议用户分配存储空间300-500MB</div> </td>
+<div align="center">用于引导系统镜像，建议用户分配存储空间300-500MB，若存储空间充足则直接分配2GB</div> </td>
 </tr>
 <tr><td>
-<div align="center">第二分区（Logical）</div> </td>
+<div align="center">第二分区</div> </td>
+
+<td>
+<div align="center">Logical</div> </td>
 
 <td>
     <div align="center">/</div> </td>
@@ -432,11 +439,14 @@
 <div align="center">Ext4</div> </td>
 
 <td>
-<div align="center">用于存放系统文件，建议用户分配总存储空间的20-30%</div> 
+<div align="center">用于存放系统文件，建议用户分配总存储空间的20-30%，视个人实际使用情况决定</div> 
 </td>   
 </tr>
 <tr><td>
-<div align="center">第三分区（Logical）</div> </td>
+<div align="center">第三分区</div> </td>
+
+<td>
+<div align="center">Logical</div> </td>
 
 <td>
     <div align="center">SWAP</div> </td>
@@ -449,7 +459,10 @@
 </td>
 </tr>
 <tr><td>
-<div align="center">第四分区（Primary）</div> </td>
+<div align="center">第四分区</div> </td>
+
+<td>
+<div align="center">Primary</div> </td>
 
 <td>
     <div align="center">/home</div> </td>
@@ -462,6 +475,7 @@
     </td>
     </tr></tbody></table>
 </div>
+
 
 
 
