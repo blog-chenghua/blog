@@ -338,7 +338,7 @@
                         
                         <span class="post-count">
                         Words:
-                        <a href="">951</a> 
+                        <a href="">942</a> 
                         </span>
                         
                         
@@ -403,20 +403,11 @@
 <li>设置分区根据电脑内存和存储不同而不同，具体参见<a href="https://blog.csdn.net/sinat_38363122/article/details/115765230">Ubuntu分区</a>，勾选后点击install now。</li>
 </ul>
 </blockquote>
-<div style="overflow:auto;width:100%"> <p>设置用户名及密码，点击继续。</p><p><img src="https://qiniu.md.amovlab.com/img/m/202207/20220704/1838233359202779120697344.png" alt="image.png"></p><p>等待安装完成后，重启。</p><p>拔掉U盘，按下回车，系统安装成功啦！</p><p><img src="https://prometheus-wiki.readthedocs.io/zh-cn/latest/_images/102.png" alt="image.png"></p><p>对于Ubuntu使用由于国内网络环境影响，强烈建议更改Ubuntu的源，这里的源是指你使用Ubuntu下载东西时所经过的网络途径，默认是国外源，国内使用很慢，且经常出现下载失败，所以强烈建议改源，建议改为阿里源或者清华源 修改方法参见： <a href="https://blog.csdn.net/weixin_46410217/article/details/123786316">改源的两种方法</a></p><blockquote>
-<p>提示</p>
-<p>ROS官方安装教程已经比较完善，Prometheus使用手册不再详细介绍，可参考官方的进行安装。</p>
-<p>需要注意的是官方的安装由于国内网络环境影响可能会出现下载缓慢或者失败，这里也提供国内安装方法</p>
-<p>命令行安装：<a href="https://fishros.org.cn/forum/topic/20/%E5%B0%8F%E9%B1%BC%E7%9A%84%E4%B8%80%E9%94%AE%E5%AE%89%E8%A3%85%E7%B3%BB%E5%88%97?lang=zh-CN">一键安装</a></p>
-<p>国内源安装：<a href="https://blog.csdn.net/weixin_56197703/article/details/122699813">国内源安装</a></p>
-<p>Ubuntu18.04: <a href="https://wiki.ros.org/melodic/Installation/Ubuntu">ROS-melodic</a></p>
-<p>Ubuntu20.04: <a href="https://wiki.ros.org/noetic/Installation/Ubuntu">ROS-noetic</a></p>
-<p>ROS是否安装好可以通过终端依次输入下面指令，运行小乌龟程序来检验，如果可以正常键盘的↑↓←→键控制小乌龟代表正常ROS安装成功</p>
-<figure class="highlight plaintext"></figure></blockquote><table width="auto" style="white-space:nowrap">
+<div style="overflow:auto;width:100%"> <table width="auto" style="white-space:nowrap">
 <tbody><tr>
 <td> <div align="center"> <strong>分区</strong></div> </td> 
 <td> <div align="center"> <strong>挂载点</strong></div> </td>
-<td> <div align="center"> <strong>格式</strong></div> </td>
+<td> <div align="center"> <strong>类型</strong></div> </td>
 <td> <div align="center"> <strong>备注</strong></div> </td>
 </tr>
 <tr><td>
@@ -429,7 +420,7 @@
 <div align="center">Ext4</div> </td>
 
 <td>
-<div align="center">用于引导系统镜像，建议用户分配300-500MB，若存储空间足够则分配2GB</div> </td>
+<div align="center">用于引导系统镜像，建议用户分配存储空间300-500MB</div> </td>
 </tr>
 <tr><td>
 <div align="center">第二分区（Logical）</div> </td>
@@ -454,7 +445,7 @@
 <div align="center">SWAP</div> </td>
 
 <td>
-<div align="center">用于拓展虚拟内存空间，建议用户分配总物理内存的1-2倍</div> 
+<div align="center">用于拓展内存空间，建议用户分配总物理内存的1到2倍</div> 
 </td>
 </tr>
 <tr><td>
@@ -468,23 +459,37 @@
 
 <td>
 <div align="center">用于存储用户数据，建议用户分配余下的全部存储空间</div> 
-</td>
+    </td>
+    </tr></tbody></table>
+</div>
 
 
 
 
-
-
-
-</tr></tbody></table><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">roscore</span><br><span class="line">rosrun turtlesim turtlesim_node</span><br><span class="line">rosrun turtlesim turtle_teleop_key</span><br></pre></td></tr></tbody></table>
+<p>设置用户名及密码，点击继续。</p>
+<p><img src="https://qiniu.md.amovlab.com/img/m/202207/20220704/1838233359202779120697344.png" alt="image.png"></p>
+<p>等待安装完成后，重启。</p>
+<p>拔掉U盘，按下回车，系统安装成功啦！</p>
+<p><img src="https://prometheus-wiki.readthedocs.io/zh-cn/latest/_images/102.png" alt="image.png"></p>
+<p>对于Ubuntu使用由于国内网络环境影响，强烈建议更改Ubuntu的源，这里的源是指你使用Ubuntu下载东西时所经过的网络途径，默认是国外源，国内使用很慢，且经常出现下载失败，所以强烈建议改源，建议改为阿里源或者清华源 修改方法参见： <a href="https://blog.csdn.net/weixin_46410217/article/details/123786316">改源的两种方法</a></p>
+<blockquote>
+<p>提示</p>
+<p>ROS官方安装教程已经比较完善，Prometheus使用手册不再详细介绍，可参考官方的进行安装。</p>
+<p>需要注意的是官方的安装由于国内网络环境影响可能会出现下载缓慢或者失败，这里也提供国内安装方法</p>
+<p>命令行安装：<a href="https://fishros.org.cn/forum/topic/20/%E5%B0%8F%E9%B1%BC%E7%9A%84%E4%B8%80%E9%94%AE%E5%AE%89%E8%A3%85%E7%B3%BB%E5%88%97?lang=zh-CN">一键安装</a></p>
+<p>国内源安装：<a href="https://blog.csdn.net/weixin_56197703/article/details/122699813">国内源安装</a></p>
+<p>Ubuntu18.04: <a href="https://wiki.ros.org/melodic/Installation/Ubuntu">ROS-melodic</a></p>
+<p>Ubuntu20.04: <a href="https://wiki.ros.org/noetic/Installation/Ubuntu">ROS-noetic</a></p>
+<p>ROS是否安装好可以通过终端依次输入下面指令，运行小乌龟程序来检验，如果可以正常键盘的↑↓←→键控制小乌龟代表正常ROS安装成功</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">roscore</span><br><span class="line">rosrun turtlesim turtlesim_node</span><br><span class="line">rosrun turtlesim turtle_teleop_key</span><br></pre></td></tr></tbody></table></figure>
 
 <p>需注意无论哪种安装方式，其中一定包含构建包的依赖，也就是下面这个安装命令，否则后面安装PX4环境会出现问题</p>
 <p>Ubuntu18.04依赖包</p>
 <figure class="highlight python"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install python-rosdep python-rosinstall python-rosinstall-generator python-wstool build-essential</span><br></pre></td></tr></tbody></table></figure>
 
 <p>Ubuntu20.04依赖包</p>
-<figure class="highlight python"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential</span><br></pre></td></tr></tbody></table></figure>
-</div>
+<figure class="highlight python"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install python3-rosdep python3-rosinstall python3-rosinstall-generator python3-wstool build-essential</span><br></pre></td></tr></tbody></table></figure></blockquote>
+
         </div>
 
         
