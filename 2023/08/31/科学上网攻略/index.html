@@ -234,7 +234,6 @@
     })
 </script>
 
-
 <meta name="generator" content="Hexo 6.3.0">
 <style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
 <link rel="alternate" href="/atom.xml" title="Chenghua's Blog" type="application/atom+xml">
@@ -338,7 +337,7 @@
                         
                         <span class="post-count">
                         Words:
-                        <a href="">1.9k</a> 
+                        <a href="">1.8k</a> 
                         </span>
                         
                         
@@ -368,9 +367,11 @@
 <figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl disable v2ray --now </span><br></pre></td></tr></tbody></table></figure>
 <h3 id="第二步：-1"><a href="#第二步：-1" class="headerlink" title="第二步："></a>第二步：</h3><p>安装软件，下载所需<a href="https://github.com/v2rayA/v2rayA/releases">Debian</a> 软件包</p>
 <p>然后可以使用Gdebi、QApt 等图形化工具来安装，或者使用终端命令行</p>
-<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install package.deb ### 第一种命令方式，自行替换软件包所在的实际路径及文件名</span><br><span class="line">sudo dpkg -i package.deb ### 第二种命令方式，自行替换软件包所在的实际路径及文件名</span><br><span class="line">sudo apt-get install -f  ### 若安装过程中出现依赖问题，则使用本条命令修复</span><br></pre></td></tr></tbody></table></figure>
-<h3 id="第三步：-1"><a href="#第三步：-1" class="headerlink" title="第三步："></a>第三步：</h3><p>启动 v2rayA，并设置开机自启项</p>
-<figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl start v2raya.service ###启动代理服务</span><br><span class="line">sudo systemctl enable v2raya.service ###设置开机自启动</span><br></pre></td></tr></tbody></table></figure>
+<figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt install package.deb</span><br></pre></td></tr></tbody></table></figure>
+<h3 id="第三步：-1"><a href="#第三步：-1" class="headerlink" title="第三步："></a>第三步：</h3><p>启动 v2rayA，开启代理服务</p>
+<figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl start v2raya.service</span><br></pre></td></tr></tbody></table></figure>
+<p>按需设置开机自启</p>
+<figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl enable v2raya.service</span><br></pre></td></tr></tbody></table></figure>
 
 <p>配置方面，v2rayA配置界面以网页形式呈现，因此打开系统浏览器，访问v2rayA的配置地址<a href="http://localhost:2017/">http://localhost:2017/</a></p>
 <p>首次打开需要创建一个管理员账号，如果遗忘，使用下面的命令进行重置</p>
@@ -378,7 +379,7 @@
 
 <p>以创建或导入的方式导入节点，导入支持节点链接、订阅链接、扫描二维码和批量导入等方式，导入成功后，节点将显示在 SERVER 服务中，选择连接的节点，再点击左上角的就绪按钮即可开启代理。</p>
 <p>在某些不能自动配置代理的系统中，还需要手动进行代理，进入设置–&gt;网络–&gt;网络代理–&gt;手动代理。</p>
-<p>默认端口：2017（V2rayA后端端口）、20170（SOCKS协议）、20171（HTTP协议）、20172（带分流规则的HTTP协议）、32345（tproxy，透明代理端口）、32346（插件协议端口，如trojan、ssr和pingtunnel）</p>
+<p>默认端口：2017（V2rayA后端端口）、20170（SOCKS协议）、20171（HTTP协议）、20172（带分流规则的HTTP协议）、32345（tproxy，透明代理端口）、32346（插件协议端口）</p>
 <p>参考官网文档：<a href="https://v2raya.org/">v2rayA安装配置</a>|<a href="https://github.com/v2fly/fhs-install-v2ray">v2ray内核安装</a>|<a href="https://github.com/XTLS/Xray-install">Xray内核安装</a></p>
 <center>Mac OS</center>
 
