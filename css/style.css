@@ -150,7 +150,7 @@ template {
   font-display: swap;
 }
 html {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans", Helvetica, Arial, SimSun, "Apple Color Emoji", "Segoe UI Emoji";
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif, Helvetica, Arial, SimSun, "Apple Color Emoji", "Segoe UI Emoji";
 }
 html::-webkit-scrollbar {
   width: 8px;
@@ -991,7 +991,7 @@ header label {
 .post-content pre {
   line-height: 1.7em;
   padding: 7px;
-  font-size: 13px;
+  font-size: 14px;
   font-family: Consolas, Monaco, Menlo, Consolas, monospace;
 }
 .post-content code {
