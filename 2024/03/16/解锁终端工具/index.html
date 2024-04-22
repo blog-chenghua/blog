@@ -16,7 +16,7 @@
 
 
 
-<title>Archives | Chenghua&#39;s Blog</title>
+<title>解锁终端工具 | Chenghua&#39;s Blog</title>
 
 
 
@@ -314,71 +314,90 @@
 </header>
 
             <div class="main">
-                <div class="post-wrap archive">
+                <div class="container">
     
     
-        
 
-        
-            <h3>2023</h3>
-        
-
-        <article class="archive-item">
-            <a class="archive-item-link" href="/2023/09/08/%E5%B0%8F%E7%B1%B3%E7%94%B5%E8%A7%86%E4%BC%98%E5%8C%96/">小米电视优化</a>
-            <span class="archive-item-date">September 8, 2023</span>
-        </article>
     
-        
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">解锁终端工具</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/about">Cheng Hua</a>
+                    
+                    
+                    
+                        <span class="post-time">
+                        Date: <a href="#">March 16, 2024&nbsp;&nbsp;19:23:00</a>
+                        </span>
+                    
+                    
+                        
+                        <span class="post-count">
+                        Words:
+                        <a href="">419</a> 
+                        </span>
+                        
+                        
+                        <span class="post-count">
+                        Time:
+                        <a href="">1min</a> 
+                        </span>
+                        
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p>FinalShell是一个功能强大的跨平台终端和SSH工具，它提供了丰富的功能和用户友好的界面，旨在帮助用户轻松管理远程服务器和执行各种系统操作，适用于各种场景下的系统管理员、开发人员和网络工程师等用户。</p>
+<p>在讨论 FinalShell 的相关内容时，需要注意该软件是一个非开源的终端和SSH工具，提供远程服务器管理的功能。关于其激活方法，目前网上主流讨论集中在版本3.9.6之前的授权方式，其中包括各种社区分享和工具网站提供的激活码生成服务。本站提供了新版FinalShell的激活算法，用户需要提供机器码并选择所需的高级版或专业版来获取激活码。请注意，系统需预装Python环境，并下载第三方Crypto库。</p>
+<p>希望用户能够理解并严格遵守道德规范，合法合规地使用FinalShell，并尊重软件开发者的劳动成果。有能力的情况下，建议用户通过官方正规渠道购买软件，支持正版开发者。</p>
+<figure class="highlight python"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> Crypto.Hash <span class="keyword">import</span> keccak</span><br><span class="line"><span class="keyword">from</span> Crypto.Hash <span class="keyword">import</span> MD5</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">md5</span>(<span class="params">msg</span>):</span><br><span class="line">    hash_obj = MD5.new(msg)</span><br><span class="line">    <span class="keyword">return</span> hash_obj.hexdigest()</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">keccak384</span>(<span class="params">msg</span>):</span><br><span class="line">    hash_obj = keccak.new(data=msg, digest_bits=<span class="number">384</span>)</span><br><span class="line">    <span class="keyword">return</span> hash_obj.hexdigest()</span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    code = <span class="built_in">input</span>(<span class="string">'输入机器码: '</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">'版本号 &lt; 3.9.6 (旧版)'</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">'高级版:'</span>, md5(<span class="string">f'61305<span class="subst">{code}</span>8552'</span>.encode())[<span class="number">8</span>:<span class="number">24</span>])</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">'专业版:'</span>, md5(<span class="string">f'2356<span class="subst">{code}</span>13593'</span>.encode())[<span class="number">8</span>:<span class="number">24</span>])</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">'版本号 &gt;= 3.9.6 (新版)'</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">'高级版:'</span>, keccak384(<span class="string">f'<span class="subst">{code}</span>hSf(78cvVlS5E'</span>.encode())[<span class="number">12</span>:<span class="number">28</span>])</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">'专业版:'</span>, keccak384(<span class="string">f'<span class="subst">{code}</span>FF3Go(*Xvbb5s2'</span>.encode())[<span class="number">12</span>:<span class="number">28</span>])</span><br></pre></td></tr></tbody></table></figure>
+
+
+
+        </div>
 
         
-
-        <article class="archive-item">
-            <a class="archive-item-link" href="/2023/08/31/%E7%A7%91%E5%AD%A6%E4%B8%8A%E7%BD%91%E6%94%BB%E7%95%A5/">科学上网攻略</a>
-            <span class="archive-item-date">August 31, 2023</span>
-        </article>
-    
+            <section class="post-copyright">
+                
+                
+                
+                
+                         <center><span><strong>我与山河皆无恙,满眼星河都是你</strong>.</span></center>
+                
+            </section>
         
-
-        
-
-        <article class="archive-item">
-            <a class="archive-item-link" href="/2023/08/30/%E5%8D%9A%E5%AE%A2%E6%B5%8B%E8%AF%95%E8%A7%86%E9%A2%91/">博客测试视频</a>
-            <span class="archive-item-date">August 30, 2023</span>
-        </article>
-    
-        
-
-        
-
-        <article class="archive-item">
-            <a class="archive-item-link" href="/2023/08/30/%E5%8D%9A%E5%AE%A2%E6%B5%8B%E8%AF%95%E5%9B%BE%E7%89%87/">博客测试图片</a>
-            <span class="archive-item-date">August 30, 2023</span>
-        </article>
-    
-        
-
-        
-
-        <article class="archive-item">
-            <a class="archive-item-link" href="/2023/08/30/%E5%8D%9A%E5%AE%A2%E6%B5%8B%E8%AF%95%E9%9F%B3%E9%A2%91/">博客测试音频</a>
-            <span class="archive-item-date">August 30, 2023</span>
-        </article>
-    
-        
-
-        
-
-        <article class="archive-item">
-            <a class="archive-item-link" href="/2023/08/29/%E5%8D%9A%E5%AE%A2%E6%B5%8B%E8%AF%95%E8%A1%A8%E6%83%85/">博客测试表情</a>
-            <span class="archive-item-date">August 29, 2023</span>
-        </article>
-    
-    
-    <nav class="pagination">
-        <a class="page-number" href="/archives/">1</a><span class="page-number current">2</span>
-    </nav>
-
+         <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="#"># Top</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">Back</a>
+                <span> & </span>
+                <a href="/">Home</a>
+            </div>
+        </section> 
+        <section class="post-nav">
+            
+                <a class="prev" rel="prev" href="/2024/04/10/%E5%AE%9E%E9%AA%8C%E5%9B%A2%E9%98%9F%E4%BB%8B%E7%BB%8D/">实验团队介绍</a>
+            
+            
+            <a class="next" rel="next" href="/2024/03/12/%E7%BD%91%E7%9B%98%E7%9B%B4%E9%93%BE%E4%B8%8B%E8%BD%BD/">百度网盘下载</a>
+            
+        </section>
+    </article>
 </div>
+
             </div>
             <footer id="footer" class="footer">
     <div class="copyright">

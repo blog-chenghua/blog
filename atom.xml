@@ -39,6 +39,53 @@
   </entry>
   
   <entry>
+    <title>解锁终端工具</title>
+    <link href="http://blog-chenghua.github.io/2024/03/16/%E8%A7%A3%E9%94%81%E7%BB%88%E7%AB%AF%E5%B7%A5%E5%85%B7/"/>
+    <id>http://blog-chenghua.github.io/2024/03/16/%E8%A7%A3%E9%94%81%E7%BB%88%E7%AB%AF%E5%B7%A5%E5%85%B7/</id>
+    <published>2024-03-16T11:23:00.000Z</published>
+    <updated>2024-04-22T12:01:03.555Z</updated>
+    
+    <content type="html"><![CDATA[<p>FinalShell是一个功能强大的跨平台终端和SSH工具，它提供了丰富的功能和用户友好的界面，旨在帮助用户轻松管理远程服务器和执行各种系统操作，适用于各种场景下的系统管理员、开发人员和网络工程师等用户。</p><p>在讨论 FinalShell 的相关内容时，需要注意该软件是一个非开源的终端和SSH工具，提供远程服务器管理的功能。关于其激活方法，目前网上主流讨论集中在版本3.9.6之前的授权方式，其中包括各种社区分享和工具网站提供的激活码生成服务。本站提供了新版FinalShell的激活算法，用户需要提供机器码并选择所需的高级版或专业版来获取激活码。请注意，系统需预装Python环境，并下载第三方Crypto库。</p><p>希望用户能够理解并严格遵守道德规范，合法合规地使用FinalShell，并尊重软件开发者的劳动成果。有能力的情况下，建议用户通过官方正规渠道购买软件，支持正版开发者。</p><figure class="highlight python"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> Crypto.Hash <span class="keyword">import</span> keccak</span><br><span class="line"><span class="keyword">from</span> Crypto.Hash <span class="keyword">import</span> MD5</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">md5</span>(<span class="params">msg</span>):</span><br><span class="line">    hash_obj = MD5.new(msg)</span><br><span class="line">    <span class="keyword">return</span> hash_obj.hexdigest()</span><br><span class="line"><span class="keyword">def</span> <span class="title function_">keccak384</span>(<span class="params">msg</span>):</span><br><span class="line">    hash_obj = keccak.new(data=msg, digest_bits=<span class="number">384</span>)</span><br><span class="line">    <span class="keyword">return</span> hash_obj.hexdigest()</span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    code = <span class="built_in">input</span>(<span class="string">'输入机器码: '</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">'版本号 &lt; 3.9.6 (旧版)'</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">'高级版:'</span>, md5(<span class="string">f'61305<span class="subst">{code}</span>8552'</span>.encode())[<span class="number">8</span>:<span class="number">24</span>])</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">'专业版:'</span>, md5(<span class="string">f'2356<span class="subst">{code}</span>13593'</span>.encode())[<span class="number">8</span>:<span class="number">24</span>])</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">'版本号 &gt;= 3.9.6 (新版)'</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">'高级版:'</span>, keccak384(<span class="string">f'<span class="subst">{code}</span>hSf(78cvVlS5E'</span>.encode())[<span class="number">12</span>:<span class="number">28</span>])</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">'专业版:'</span>, keccak384(<span class="string">f'<span class="subst">{code}</span>FF3Go(*Xvbb5s2'</span>.encode())[<span class="number">12</span>:<span class="number">28</span>])</span><br></pre></td></tr></tbody></table></figure>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;p&gt;FinalShell是一个功能强大的跨平台终端和SSH工具，它提供了丰富的功能和用户友好的界面，旨在帮助用户轻松管理远程服务器和执行各种系统操作，适用于各种场景下的系统管理员、开发人员和网络工程师等用户。&lt;/p&gt;
+&lt;p&gt;在讨论 FinalShell 的相关内容时，需要注意该</summary>
+      
+    
+    
+    
+    
+    <category term="Top" scheme="http://blog-chenghua.github.io/tags/Top/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>百度网盘下载</title>
+    <link href="http://blog-chenghua.github.io/2024/03/12/%E7%BD%91%E7%9B%98%E7%9B%B4%E9%93%BE%E4%B8%8B%E8%BD%BD/"/>
+    <id>http://blog-chenghua.github.io/2024/03/12/%E7%BD%91%E7%9B%98%E7%9B%B4%E9%93%BE%E4%B8%8B%E8%BD%BD/</id>
+    <published>2024-03-12T01:00:00.000Z</published>
+    <updated>2024-04-22T11:43:48.829Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote><p>百度网盘主要通过其平台进行文件的存储和分享，用户可以通过分享链接和提取码的方式来共享文件，但链接需要通过百度网盘的界面或应用程序访问。本项目旨在允许用户通过直接链接下载文件，而不需要通过百度网盘的界面或应用程序。</p></blockquote><h3 id="功能简介："><a href="#功能简介：" class="headerlink" title="功能简介："></a>功能简介：</h3><ul><li><strong>直链下载</strong>：提供一个直接指向文件的URL，用户可以直接访问链接，从而下载文件。</li><li><strong>绕过界面</strong>：用户无需登录百度网盘账户，也不需要启动百度网盘的官方客户端或网页版。</li></ul><h3 id="使用场景："><a href="#使用场景：" class="headerlink" title="使用场景："></a>使用场景：</h3><ul><li><strong>提高效率</strong>：对于需要批量下载或频繁访问文件的用户来说，直链下载可以省去登录和导航的时间。</li><li><strong>自动工具</strong>：开发者可能会使用脚本或其他自动化工具来管理文件下载，直链可以方便这些工具的操作。</li></ul><h3 id="技术实现："><a href="#技术实现：" class="headerlink" title="技术实现："></a>技术实现：</h3><ul><li>项目涉及的所有接口均为官方公开的API，使用需依赖于合法的会员账号来代理提取高速下载链接。</li></ul><h3 id="下载提示："><a href="#下载提示：" class="headerlink" title="下载提示："></a>下载提示：</h3><p> Windows/MacOS/Linux系统平台</p><p>Motrix 设计上简洁现代，提供了跨平台的支持，使其在 Windows、MacOS 和 Linux 系统上都能使用。该工具的主要特点是提供了一个干净、直观的用户界面，并且支持多任务下载，能够满足大多数用户的下载需求。</p><ol><li>前往<a href="https://motrix.app/">Motrix官网</a>，下载 <strong>Motrix</strong> 对应版本</li><li>安装后运行Motrix</li><li>设置“RPC监听端口”为16800，保存并应用</li><li>打开<a href="https://bd.chenghua.icu/">解析下载</a>页面，点击 <strong>推送到 Motrix</strong></li></ol><h3 id="严正声明："><a href="#严正声明：" class="headerlink" title="严正声明："></a>严正声明：</h3><ul><li><strong>版权问题</strong>：本项目旨在促进文件分享与下载的便利性，核心代码均未加密，遵守<strong>MIT开源许可协议</strong>。</li><li><strong>规范问题</strong>：本项目严格遵守官方API的使用规范，不涉及任何破坏或滥用官方接口的行为。</li><li><strong>使用条款</strong>：本项目的使用仅限于个人学习和研究目的，严禁用于商业活动。</li><li><strong>违反条款</strong>：任何因忽视本声明及官方政策要求而导致的正负面结果，本站概不负责。</li></ul>]]></content>
+    
+    
+      
+      
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;百度网盘主要通过其平台进行文件的存储和分享，用户可以通过分享链接和提取码的方式来共享文件，但链接需要通过百度网盘的界面或应用程序访问。本项目旨在允许用户通过直接链接下载文件，而不需要通过百度网盘的界面或应用程序。&lt;/p&gt;
+&lt;/blockquote&gt;</summary>
+      
+    
+    
+    
+    
+    <category term="Top" scheme="http://blog-chenghua.github.io/tags/Top/"/>
+    
+  </entry>
+  
+  <entry>
     <title>端口绕过认证</title>
     <link href="http://blog-chenghua.github.io/2024/03/12/%E7%AB%AF%E5%8F%A3%E7%BB%95%E8%BF%87%E8%AE%A4%E8%AF%81/"/>
     <id>http://blog-chenghua.github.io/2024/03/12/%E7%AB%AF%E5%8F%A3%E7%BB%95%E8%BF%87%E8%AE%A4%E8%AF%81/</id>
@@ -65,8 +112,8 @@
   
   <entry>
     <title>解锁媒体限制</title>
-    <link href="http://blog-chenghua.github.io/2024/02/18/%E8%A7%A3%E9%94%81Emby%E9%99%90%E5%88%B6/"/>
-    <id>http://blog-chenghua.github.io/2024/02/18/%E8%A7%A3%E9%94%81Emby%E9%99%90%E5%88%B6/</id>
+    <link href="http://blog-chenghua.github.io/2024/02/18/%E8%A7%A3%E9%94%81%E5%AA%92%E4%BD%93%E9%99%90%E5%88%B6/"/>
+    <id>http://blog-chenghua.github.io/2024/02/18/%E8%A7%A3%E9%94%81%E5%AA%92%E4%BD%93%E9%99%90%E5%88%B6/</id>
     <published>2024-02-17T16:00:00.000Z</published>
     <updated>2024-04-19T08:26:13.788Z</updated>
     
