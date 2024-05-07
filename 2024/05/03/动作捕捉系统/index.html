@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+<meta name="google-site-verification" content="koFxmEYwvDDlW78oBJ3uN6VHYCEw__3w3lVITK79cWE" />
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <meta name="author" content="Cheng Hua">
+
+
+
+    <meta name="description" content="blog-chenghua">
+
+
+
+<title>动作捕捉系统 | Chenghua&#39;s Blog</title>
+
+
+
+    <link rel="icon" href="/favicon.ico">
+
+
+
+
+    <!-- stylesheets list from _config.yml -->
+    
+    <link rel="stylesheet" href="/css/style.css">
+    
+
+
+
+    <!-- scripts list from _config.yml -->
+    
+    <script src="/js/script.js"></script>
+    
+    <script src="/js/tocbot.min.js"></script>
+    
+    <script src="/js/jquery.min.js"></script>
+    
+
+
+
+    
+    
+        
+    
+
+
+
+
+
+    <script>
+    function searchToggle() {
+        const width = $(document.body).width()
+        if(width > 479) {
+            return;
+        }
+        const search = $('.search');
+        const searchForm = $('.form-search');
+        const menuToggle = $('.menu-toggle');
+        const title = $('.navbar-header-title ');
+
+        if(!search.hasClass("mobile-search")) {
+            search.addClass("mobile-search");
+            menuToggle.addClass("open-search")
+            title.addClass("mobile-title-hidden")
+        } else {
+            search.removeClass("mobile-search");
+            menuToggle.removeClass("open-search")
+            // title.css({visibility: 'visible'})
+            title.removeClass("mobile-title-hidden")
+        } 
+
+       
+    }
+
+    function inputChange(e) {
+        const value = e.target.value;
+        const pc = $('#pc-search-input');
+        const mobile = $('#mobile-search-input');
+        const modalInput = $('#modal-form-input');
+        // 其中一个搜索框修改要更改另外两个搜索框
+        const inputArray = [pc, mobile, modalInput];
+        // modalInput.val("fuck")
+        for(let i = 0; i < inputArray.length; i++) {
+            if(e.target === inputArray[i][0]) {
+                continue;
+            }
+            inputArray[i].val(value);
+        }
+        
+    }
+
+    function search(searchInputEl, formEl, flag) {
+        const path = "/" + "search.json";
+        $(formEl).submit(function(e){
+            if(e && e.preventDefault){
+                e.preventDefault();
+            }else{
+                window.event.returnValue = false;
+            }
+            
+            const modalInput = $('#modal-form-input');
+         
+            if(!flag && modalInput.val() === '') {
+                return ;
+            }
+
+            $("#u-search").fadeIn(500, function() {
+                $("body > .wrapper").addClass("modal-active");
+                $(".form-input").focus();
+                $.ajax({
+                    url: path,
+                    dataType: "json",
+                    beforeSend: function (xhr) {
+                        const loadingBar = $('.search-loading-bar') 
+                        loadingBar.css({
+                            width:'100%',
+                            visibility: 'visible'
+                        });
+                    },
+                    success: function( datas ) {
+                        const $resultPanel = $(".modal-body")[0];
+                        let str = `<ul class="modal-results">`;
+                        var keywords = $(".form-input").val().trim().toLowerCase().split(/[\s\-]+/);
+                        $resultPanel.innerHTML = "";
+                        let hasResult = false
+                        let text = `<div class="no-result">找不到与关键词相关的内容....</div>`;
+
+                        if ($(".form-input").val().trim().length <= 0) {
+                            // 没有结果
+                            $resultPanel.innerHTML = text;
+                            return;
+                        }
+                        datas.forEach(function (data) {
+                            var isMatch = true;
+                            var data_title = data.title && data.title.trim().toLowerCase() || 'Untitled';
+                            var data_content = data.content && data.content.trim().replace(/<[^>]+>/g, "").toLowerCase() || '';
+                            var data_url = data.url;
+                            var index_title = -1;
+                            var index_content = -1;
+                            var first_occur = -1;
+                            if (data_content !== '') {
+                                keywords.forEach(function (keyword, i) {
+                                    index_title = data_title.indexOf(keyword);
+                                    index_content = data_content.indexOf(keyword);
+
+                                    if (index_title < 0 && index_content < 0) {
+                                        isMatch = false;
+                                    } else {
+                                        hasResult = true
+                                        if (index_content < 0) {
+                                            index_content = 0;
+                                        }
+                                        if (i == 0) {
+                                            first_occur = index_content;
+                                        }
+                                    }
+                                });
+                            } else {
+                                isMatch = false;
+                            }
+                            // show search results
+                            if (isMatch) {
+                                str += `<li class='result-item'><a href='${data_url}' class='result-item-detail'> <span class="title">${data_title}</span>`;
+                                var content = data.content.trim().replace(/<[^>]+>/g, "");
+                                if (first_occur >= 0) {
+                                    // cut out 200 characters
+                                    var start = first_occur - 40;
+                                    var end = first_occur + 160;
+
+                                    if (start < 0) {
+                                        start = 0;
+                                    }
+
+                                    if (start == 0) {
+                                        end = 200;
+                                    }
+
+                                    if (end > content.length) {
+                                        end = content.length;
+                                    }
+
+                                    var match_content = content.substring(start, end);
+
+                                    // highlight all keywords
+                                    keywords.forEach(function (keyword) {
+                                        var regS = new RegExp(keyword, "gi");
+                                        match_content = match_content.replace(regS, `<em class="search-keyword">${keyword}</em>`);
+                                    });
+
+                                    str += `<span class="content"> ${match_content} ...</span></a>`;
+                                }
+                                str += "</li>";
+                            }
+                        });
+                        str += "</ul>";
+                        if(hasResult) {
+                            $resultPanel.innerHTML = str;
+                        } else {
+                            $resultPanel.innerHTML = text;
+                        }
+
+                    },
+                    complete: function() {
+                        setTimeout(() => {
+                            const loadingBar = $('.search-loading-bar') 
+                            loadingBar.css({
+                                visibility: 'hidden',
+                            });
+                        }, 300)
+                    }
+                });
+            })
+        
+        });
+    }
+    
+    $(document).ready(function() {
+        $('.modal-close').click(function () { 
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+
+        $('.modal-overlay').click(function() {
+            $("#u-search").fadeOut();
+            $("body > .wrapper").removeClass("modal-active")
+        })
+        search(null, ".form-search", false)
+        search("#u-search-modal-form .form-input", ".u-search-modal-form", true)
+    })
+</script>
+
+<meta name="generator" content="Hexo 6.3.0">
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+<link rel="alternate" href="/atom.xml" title="Chenghua's Blog" type="application/atom+xml">
+</head>
+
+<body>
+    <script>
+        // this function is used to check current theme before page loaded.
+        (() => {
+            const currentTheme = window.localStorage && window.localStorage.getItem('theme') || '';
+            const isDark = currentTheme === 'dark';
+            const pagebody = document.getElementsByTagName('body')[0]
+            if (isDark) {
+                pagebody.classList.add('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Dark"
+            } else {
+                pagebody.classList.remove('dark-theme');
+                // mobile
+                document.getElementById("mobile-toggle-theme").innerText = "· Light"
+            }
+        })();
+    </script>
+
+    <div class="wrapper">
+        <header>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-header header-logo"><a href="/">Chenghua&#39;s Blog</a></div>
+            <div class="menu navbar-right">
+                
+                
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Search" autocomplete="off" onchange="inputChange(event)" id="pc-search-input"/>
+        </form>
+    </div>
+
+
+
+                
+                <input id="switch_default" type="checkbox" class="switch_default">
+                <label for="switch_default" class="toggleBtn"></label>
+            </div>
+        </div>
+    </nav>
+
+    
+    <nav class="navbar-mobile" id="nav-mobile">
+        <div class="container">
+            <div class="navbar-header">
+                <div class="navbar-header-title">
+                    <a href="/">Chenghua&#39;s Blog</a><a id="mobile-toggle-theme">·&nbsp;Light</a>
+                </div>
+                <div class="navbar-mobile-right">
+                    
+                    
+    <div class="search ">
+        <div class="search-btn" onClick="searchToggle()">
+            <img src="/image/search.png" class="search-btn-img" />
+        </div>
+        <form class="form-search">
+            <input class="input" placeholder="Search" autocomplete="off" onchange="inputChange(event)" id="mobile-search-input"/>
+        </form>
+    </div>
+
+
+
+    
+            </div>
+           
+        </div>
+    </nav>
+
+</header>
+
+            <div class="main">
+                <div class="container">
+    
+    
+
+    
+    <article class="post-wrap">
+        <header class="post-header">
+            <h1 class="post-title">动作捕捉系统</h1>
+            
+                <div class="post-meta">
+                    
+                        Author: <a itemprop="author" rel="author" href="/about">Cheng Hua</a>
+                    
+                    
+                    
+                        <span class="post-time">
+                        Date: <a href="#">May 3, 2024&nbsp;&nbsp;14:00:08</a>
+                        </span>
+                    
+                    
+                        
+                        <span class="post-count">
+                        Words:
+                        <a href="">5.8k</a> 
+                        </span>
+                        
+                        
+                        <span class="post-count">
+                        Time:
+                        <a href="">19min</a> 
+                        </span>
+                        
+                </div>
+            
+        </header>
+
+        <div class="post-content">
+            <p><strong>一、什么是运动捕捉</strong></p>
+<p>运动捕捉是记录物体或人的运动的过程，也被称作动作捕捉或动捕。动作捕捉？什么是动作捕捉？字面意思可以直观地理解为通过各种技术手段记录被观察对象（人或物，或是动物）的动作，并做有效的处理。从专业角度来看，动作捕捉是一项能够实时地准确测量、记录运动物体在实际三维空间中的各类运动轨迹和姿态，并在虚拟三维空间中重构这个物体每个时刻运动状态的高新技术。</p>
+<p>该技术还涉及尺寸测量、物理空间里物体的定位及方位测定等能够借助计算机直接处理的数据。这一技术广泛应用于机器人、无人机、多智能体集群协同控制、军事、医疗、体育、科研及电影、动画、游戏、虚拟直播领域。从技术原理层面区分，可以将动捕分为：光学式、惯性式、机械式、声学式和电磁式。其中机械式、声学式、电磁式动作捕捉系统，随着时代的发展，受限于自身各种缺点，已逐渐淘汰出市场，现在行业中普遍使用红外光学动作捕捉或惯性动作捕捉。</p>
+<p><strong>二、动作捕捉技术分类</strong></p>
+<p>既然是一项技术，那么总是有各类不同方式实现这项技术的。动作捕捉技术现阶段可以分为以下几种：光学式，惯性式，机械式，声学式，电磁式。</p>
+<p>光学式动作捕捉，顾名思义，是通过光学原理来完场物体的捕捉和定位的。是通过光学镜头捕捉固定在人体或是物体上面的marker的位置信息来完成动作姿态捕捉。光学式动作捕捉依靠一整套精密而复杂的光学摄像头来实现，它通过计算机视觉原理，由多个高速摄像机从不同角度对目标特征点进行跟踪来完成全身的动作的捕捉。光学动作捕捉可分为被动式和主动式两种。这个分类是从marker来区别的。主动式是指marker是主动发光甚至可以自带ID编码的，这样镜头在视野中可以通过marker自身发光来观测它，并记录捕捉到其的运动轨迹。而被动式光学动作捕捉是通过镜头本身自带的灯板发出特定波长的红外光，照射到marker上，marker是通过特殊反光处理，可以反射镜头灯板发出的红外光，这样镜头就能在视野里捕捉记录该marker的运动轨迹。</p>
+<p>惯性动作捕捉则是采用惯性导航传感器AHRS(航姿参考系统)、IMU(惯性测量单元)测量被捕捉者或物体的运动加速度、方位、倾斜角等特性。惯性动作捕捉需要各类无线控件，电池组，传感器等一些配件。类似一个整装衣服穿在身上，通过各个部位的传感器来捕捉人体或物体的数据。</p>
+<p>机械式动作捕捉系统依靠机械装置来跟踪和测量运动轨迹。典型的系统由多个关节和刚性连杆组成，在可转动的关节中装有角度传感器，可以测得关节转动角度的变化情况。装置运动时，根据角度传感器所测得的角度变化和连杆的长度，可以得出杆件末端点在空间中的位置和运动轨迹。</p>
+<p>声学式动作捕捉系统一般由发送装置、接收系统和处理系统组成。发送装置一般是指超声波发生器，接收系统一般由三个以上的超声探头组成。通过测量声波从一个发送装置到传感器的时间或者相位差，确定到接受传感器的距离，由三个呈三角排列的接收传感器得到的距离信息解算出超声发生器到接收器的位置和方向。</p>
+<p>电磁式动作捕捉系统一般由发射源、接收传感器和数据处理单元组成。发射源在空间产生按一定时空规律分布的电磁场；接收传感器安置在表演者身体的关键位置，随着表演者的动作在电磁场中运动,接收传感器将接收到的信号通过电缆或无线方式传送给处理单元，根据这些信号可以解算出每个传感器的空间位置和方向。</p>
+<p><strong>1.惯性动作捕捉</strong></p>
+<p>惯性导航传感器、信号接收器以及数据处理系统构成了惯性传感器式动作捕捉系统。将姿态传感器穿戴在人体各个主要肢体部位，可将姿态信号无线传输至数据处理系统进行运动解算。其中姿态传感器集成了惯性传感器、重力传感器、加速度计、磁感应计、微陀螺仪等元素，得到各部分肢体的姿态信息，再结合骨骼的长度信息和骨骼层级连接关系，计算出关节点的空间位置信息。</p>
+<p><strong>优点：</strong></p>
+<p>便携且操作简单，可在户外使用。</p>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>定位不准——通过肢体姿态信息进行积分运算得到的空间位置信息具有不同程度的积分漂移，且一些传感器还会被周围环境磁场影响进而影响精度；</li>
+<li>续航力弱——充电一次后可持续工作时间有限，不适合长时间使用；</li>
+<li>数据漂移——原理本身基于单脚支撑和地面约束假设，无法进行双脚离地的运动定位解算；</li>
+<li>动作受限——传感器自身重量和线缆连接还是会对演员的动作表演造成一定约束；</li>
+<li>成本翻番——尤其在被捕捉对象数量增加时，设备的成本直接成倍增长，丧失价格优势。</li>
+</ul>
+<p><strong>2.光学式动作捕捉</strong></p>
+<p>通过布置在场地内的多个光学镜头从不同角度捕捉固定在人体/物体表面的反光标识点的位置信息，捕捉其动作姿态。根据被捕捉物/人不同的特征，还可将光学动捕分成无标记点式光学动作捕捉系统、标记点式光学动作捕捉系统。</p>
+<p><strong>（1）无标记点式光学动作捕捉原理：</strong></p>
+<ul>
+<li>第一种是基于普通视频图像的运动捕捉,通过提取人体关节点在二维图像中的坐标，再根据多相机视觉三维测量计算关节的三维空间坐标。</li>
+<li>第二种是基于主动热源照射分离前后景信息的红外相机图像的运动捕捉，也称为热能式动作捕捉，原理和第一种类似。</li>
+<li>第三种是三维深度信息的运动捕捉,系统基于结构光编码投射实时获取视场内物体的三维深度信息，根据三维形貌进行人形检测，提取关节运动轨迹。</li>
+</ul>
+<p>总体而言，无标记点式动作捕捉目前仍存在动捕精度低、动作变形等问题。</p>
+<p><strong>（2）标记点式光学动作捕捉原理：</strong></p>
+<p>标记点式光学动作捕捉系统凭借多个光学相机从各个角度捕捉黏贴在被捕捉物/人关键节点部位的Marker点，并实时传输到数据处理工作站，利用三角测量原理计算出该点精确的空间坐标，再结算出骨骼的六自由度运动。无论主动式还是被动式光学动捕都是以标记点的类型为依据进行的分类。</p>
+<p><strong>a.主动式</strong></p>
+<p>使用LED作为标识点，在人体关节部位黏贴LED之后再通过线缆连接，为电源供电。</p>
+<p><strong>优点：</strong></p>
+<p>跟踪准确率较高，识别鲁棒性好。且自带光源，因此可在室内、室外使用，不受场地限制。</p>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>运动变形——时序编码的LED识别原理是依赖相机在各个时刻对多个的标记点采集成像标识ID，破坏了同步性，而且有效动作帧的采样率偏低，不适合捕捉快速动作及数据分析；</li>
+<li>精度较低——LED标识点的可视角度小，一个光学动捕镜头的内部往往集成了两个相机近距离采集，而此类窄基线结构直接影响视觉三维测量的精度；</li>
+<li>成本加倍——同上一个问题，运动时难免出现动作遮挡导致数据缺失，想要解决遮挡盲区的问题，只有成倍增加镜头的数量，而设备成本也随之上涨；</li>
+<li>人数受限——还是受到时序编码原理的局限，系统只能承载一定数量的标识点，通常同一时间最多不要超过2个人进行动捕采集。</li>
+</ul>
+<p><strong>b.被动式</strong></p>
+<p>被动式光学动作捕捉系统中使用反光标识点黏贴在被捕捉物/人身上关键节点部位，光学动捕相机发出的红外光由marker表面反光涂层反射到动捕相机中以对该点进行三维空间内的定位。</p>
+<p><strong>优点：</strong></p>
+<p>技术成熟，高精度、高采样率、低延迟且定位精准，动作表演无障碍，且标记点成本低能够灵活增加、布点，水下环境也可适用。</p>
+<p><strong>缺点：</strong></p>
+<ul>
+<li><p>环境约束——被动式marker点自身不发光，通过调节光学相机阈值进行采集，阳光直射或其他反射物的干扰会影响捕捉效果；</p>
+</li>
+<li><p>不抗遮挡——反光标记点一旦在运动时被完全遮住，会造成动作错位，需要后期人工修复数据，或者使用光惯混合的方式避免遮挡。</p>
+</li>
+</ul>
+<p><img src="https://img.chenghua.icu/file/7ef27b063e231730e465b.png" alt="duliang1"></p>
+<p><strong>三、光学式动作捕捉系统的构成</strong><br><img src="https://www.nokov.com/ueditor/php/upload/image/20220624/1656039727925144.jpg" alt="1656039727925144.jpg"></p>
+<p><strong>1.红外光学镜头</strong></p>
+<p>作为光学动捕系统的主角，光学摄像头的分辨率、频率与视场角直接影响了整个动捕系统的精度和效果。</p>
+<p><strong>（1）镜头分辨率</strong></p>
+<p>反光标记点在镜头的画面中是以像素的形式呈现，而像素圆形的中心点则作为该点的二维坐标。由此可见，只要这一像素图形越圆润，其中心点的坐标就越准。</p>
+<p><img src="https://www.nokov.com/ueditor/php/upload/image/20220624/1656039927618274.jpg" alt="1656039927618274.jpg"></p>
+<p>因此，相同条件下，1200万像素镜头采集到的数据精度远远高于分辨率130万像素的镜头。 </p>
+<p><strong>（2）镜头频率</strong></p>
+<p>镜头频率，或称帧速率，是指画面每秒被刷新的帧数，即图形处理器一秒内刷新的次数。其单位通常用fps表示，或用Hz来表示。光学镜头的帧速率越高，意味着捕获的图像信息越多，那么被捕捉人/物的三维空间数据精度更高，动作更为流畅。</p>
+<p><strong>（3）镜头视场角</strong></p>
+<p>视场角是指以光学镜头为定点，以被捕捉物可通过镜头的最大范围的两条边缘构成的夹角。这个角度代表了光学镜头的视野范围。根据镜头分类，有两种类型：广角镜头、非广角镜头。</p>
+<p>如图所示，广角镜头的视野范围更为开阔，但一个反光标记点所占的像素数量相对较少。反观右侧视场角虽窄，但是采集到的数据精度却高于左侧。</p>
+<p><img src="https://www.nokov.com/ueditor/php/upload/image/20220624/1656042293835562.jpg" alt="1656042293835562.jpg"></p>
+<p>不仅如此，广角镜头的边缘往往存在画面变形，如果被捕捉物处在边缘位置，二维坐标的提取精度也会受到影响。</p>
+<p><strong>2.反光标识点</strong></p>
+<p>反光标识点是一个实心小球，其内部没有任何电子元件，也不需要供电或连接线，它们的表面覆盖一层反光材料，以反射光学镜头产生的光。使用时通过调整相机自身阈值只对反光标识点进行采样，略掉周围其他物体。</p>
+<p><img src="https://www.nokov.com/ueditor/php/upload/image/20220624/1656042365910881.jpg" alt="1656042365910881.jpg"></p>
+<p><strong>3. 软件及配件</strong></p>
+<p>包括动作捕捉操作及分析处理软件、POE交换机及固定装置等配件。</p>
+<p><strong>四、影响光学动作捕捉系统数据精度的几个因素</strong></p>
+<p>光学动作捕捉系统以红外光学镜头作为核心产品，通过镜头获取定位物体表面反光标记点三维空间坐标数据，数据精度可达亚毫米级，是精度极高的室内定位解决方案。</p>
+<p>在各种实际应用中，需要获取包括速度、加速度、六自由度姿态等多种类型数据。而这些数据都是通过系统获取的定位数据作为原始数据，通过软件计算得到的。因而，了解哪些重要因素会影响光学动作捕捉系统数据精度，是十分必要的。</p>
+<p><img src="https://www.nokov.com/ueditor/php/upload/image/20211105/1636095906181489.jpg" alt="图一.jpg"></p>
+<p>1.镜头分辨率</p>
+<p>被捕捉的反光标记点在镜头画面中以像素形式呈现，每个反光标记点作为像素图形被提取中心点，进而获得这个点的二维坐标。那么当这个点在镜头中呈现的图形越接近于圆形，它被提取到的中心点坐标就会越准确。</p>
+<p><img src="https://www.nokov.com/ueditor/php/upload/image/20211105/1636095939309533.jpg" alt="图四.jpg"></p>
+<p>如上图所示，左侧的图片是高分辨率镜头下的反光标记点，反光标记点所占的像素数量多，相较于右边的低分辨率镜头，其像素图形更趋近于一个圆形，最终被提取到的像素图形中心点二维坐标也就更加精确。</p>
+<p>因此相比于分辨率130万像素的镜头，在其他条件等同的情况下，分辨率1200万像素镜头采集到的数据精度会更高。</p>
+<p>2.镜头视场角</p>
+<p>可以分为广角镜头和非广角镜头两种，相比较来说，非广角镜头的视场角范围窄，但可视距离远，广角镜头视场角范围广，但可视距离近。</p>
+<p><img src="https://www.nokov.com/ueditor/php/upload/image/20211105/1636095960991081.jpg" alt="图三.jpg"></p>
+<p>如上图所示，相较于右侧非广角镜头角窄的视场角范围，左侧广角镜头的视野范围更广阔，但一个反光标记点占的像素数量相对也会较少，因此采集到的数据精度低于右侧镜头。</p>
+<p>另外，广角镜头的边缘部分通常存在畸变，对边缘部分的反光标记点的二维坐标提取也会形成一定的影响。</p>
+<p>3.系统标定质量</p>
+<p>光学动作捕捉系统进行标定的一个重要目的是获取每个镜头之间的相对位置，确定镜头坐标系与大地坐标系之间的相对关系，为后续获取三维坐标数据做准备。在学习使用动作捕捉系统的过程中，标定操作是否标准规范，将直接影响最终采集效果。</p>
+<p>4.镜头数量</p>
+<p>在一套光学动作捕捉系统中，每个镜头看到一个反光标志点，可以获取到一个二维坐标，多个镜头获取到的点二维坐标数据，结合每个镜头自身做标记，以及大地坐标系，通过计算，可以得出点的三维坐标数据。</p>
+<p><img src="https://www.nokov.com/ueditor/php/upload/image/20211105/1636095979942123.jpg" alt="图二.jpg"></p>
+<p>看到同一个点的镜头数量越多，点在不同平面上的二维坐标数据也越多，多个镜头平面相交，获取到的点的三维坐标数据也就越精确，而当看到同一个点的镜头数量不够时，甚至会出现点丢失的情况。因此，镜头的数量越多，获取到的数据精度越高，稳定性也会越好。</p>
+<p><strong>五、光学动作捕捉系统建立</strong></p>
+<p>光学动作捕捉系统是以红外光学为原理的动作捕捉系统，相较于惯性原理动作捕捉系统，GPS定位系统等定位手段，具有精度高、延迟低、实时性强、多用于室内场景等特点，系统建立过程可分为系统搭建，数据采集与传输，数据识别与处理三部分。</p>
+<p><img src="https://www.nokov.com/ueditor/php/upload/image/20210819/1629360365336242.jpg" alt="10g.jpg"></p>
+<p><strong>1.系统搭建</strong></p>
+<p><strong>1.1场地搭建</strong></p>
+<p>一套光学动作捕捉系统由红外光学镜头、动作捕捉软件、反光标志点、POE交换机、线缆、标定框、以及三脚架等镜头固定装置组成。</p>
+<p><img src="https://www.nokov.com/ueditor/php/upload/image/20210819/1629360388505249.jpg" alt="1g.jpg"></p>
+<p>首先将红外光学镜头通过三脚架、夹具等镜头固定装置布置在场地周围，确保镜头视野能够覆盖捕捉区域，然后将所有镜头通过网线连接到POE交换机。镜头通过POE交换机进行供电和数据传输，并连接到电脑中的动作捕捉软件。软件启动后，先在页面中实时模式操作连接上动作捕捉镜头。</p>
+<p><strong>1.2场地标定</strong></p>
+<p>系统软硬件搭建并相互连接成功后，下一步就是场地的标定，分为L型标定与T型标定。其作用在于给动作捕捉区域建立XYZ坐标系，计算每个镜头在坐标系中的位置和姿态，只有完成标定后，才可以正确获取到场地中各个Marker点的三维坐标数据。</p>
+<p><img src="https://www.nokov.com/ueditor/php/upload/image/20210819/1629364472347486.jpg" alt="LL.jpg"></p>
+<p>L形标定通过将L型标定杆置于场地中央，在软件中进行相应设置来完成，其目的有两个：首先是确定统一的坐标系，通过对L型杆上四个点的定位，系统可区分出其长轴与短轴，从而定义出世界坐标轴的朝向和原点位置，其次，这一过程能够给看到L杆的镜头一个初始参数，作为后面参数寻优的初值。</p>
+<p><img src="https://www.nokov.com/ueditor/php/upload/image/20210819/1629364482275550.jpg" alt="TT.jpg"></p>
+<p>T型标定的作用是给每个镜头足够的数据，使其能够在原有初值的基础上进行一个参数的迭代寻优。在这一过程，软件处于T型标定模式，操作人员手持T型杆在场地中进行挥动，镜头实时捕捉大量数据。</p>
+<p><strong>2.数据采集与传输</strong></p>
+<p><strong>2.1数据采集</strong></p>
+<p><img src="https://www.nokov.com/ueditor/php/upload/image/20210819/1629360475396668.jpg" alt="9.jpg"></p>
+<p>完成标定后，即可进行被捕捉物空间数据的获取。在需要定位的人或物体表面贴上反光标记点（一种表面涂有特殊反光物质的银灰色小球），动作捕捉镜头上的LED灯向外发射红外光，同时接收反光标记点反射回来的红外光。当多个光学镜头同时“看到”一个标记点后，这一标记点在空间中的三维位置就会被确定。</p>
+<p><strong>2.2数据传输</strong></p>
+<p><img src="https://www.nokov.com/ueditor/php/upload/image/20210819/1629360505602742.jpg" alt="5g.jpg"></p>
+<p>镜头获取到的反光标记点位置信息需要实时传输到电脑中，以进行数据的处理与使用。在光学动作捕捉系统中，所有镜头通过网线与交换机相连，当镜头获取到反光标记点空间位置信息后，这些信息会通过网线传输到交换机，再由交换机统一传输到相连的电脑中，并实时被动作捕捉软件接收。</p>
+<p><strong>3.数据识别与处理</strong></p>
+<p>软件获取到多个反光标记点的三维空间位置后，下一步是进行物体的识别。在同一物体表面贴有多个反光标记点，这些特定点之间的距离是不变的，因而，对同一物体上贴有的有的点进行命名，并将点之间用线进行连接，表示两点间的相互关系，这一组点名称与连线信息在软件中被操作记录为一组Markerset。当具有这组Markerset信息的物体出现在场地中时，即被系统识别为一个独立物体。</p>
+<p>一些人体动作捕捉需要大量贴点捕捉数据，有专门的贴点模型供选择使用，根据所提供的贴点模型，在人体固定位置粘贴反光标记点，并在软件中进行点的识别、连接与骨骼绑定。</p>
+<p>当系统能够实时识别被捕捉物后，一个完整的光学动作捕捉系统就已建立完成，接下来可直接进行动作捕捉，捕捉得到的模型数据还可实时根据效果在软件中进行调整与矫正。根据不同领域方向的需要，光学动作捕捉系统还可实现与测力台等设备同步进行运动与测力数据捕捉、连接三维软件进行虚拟人物生成等操作。</p>
+<p><strong>六、动作捕捉设备应用现状</strong></p>
+<p>机械式动作捕捉虽然成本低，精度也较高，但是由于机械设备有尺寸及重量等问题，使用起来非常不方便。而声学式动作捕捉的延迟很大，精度不高，大部分动作捕捉的应用领域都无法使用。电磁式的动作捕捉设备对于环境的要求很严格，如果表演场地附近有金属物品，就会造成电磁场畸变，影响精度。所以，机械式、声学式与电磁式的动作捕捉系统在现代已较少应用。</p>
+<p>目前主流的动作捕捉技术是惯性动作捕捉与光学动作捕捉。光学动作捕捉中，由于主动式marker需要供电，在固定marker时需要的配件和线路会影响使用，所以现在主流使用的光学动作捕捉几乎为被动式光学动捕。与被动式光学动作捕捉亚毫米级的精度相比，惯性动作捕捉的误差随着时间而累积，精度上不如被动式光学动作捕捉；在使用环境上，由于惯性动作捕捉的传感器长时间暴露在磁场中可能会造成传感器磁化，所以在使用时要远离磁场（包括但不限于电脑、键盘、电视等）。在自动化控制、运动分析、步态分析、虚拟现实、人机工效、影视动画等领域，被动式光学动作捕捉往往更具优势。考虑到惯性动作捕捉相对被动式光学动作捕捉具有的价格优势，在一些对精度要求不那么高的领域（如部分电影电视中的人群的动作捕捉），往往会选用惯性动作捕捉。</p>
+<p>资料来源：<a href="https://book.yunzhan365.com/xdlna/orri/mobile/index.html">北京度量科技有限公司</a></p>
+
+        </div>
+
+        
+            <section class="post-copyright">
+                
+                
+                
+                
+                         <center><span><strong>我与山河皆无恙,满眼星河都是你</strong>.</span></center>
+                
+            </section>
+        
+         <section class="post-tags">
+            <div>
+                <span>Tag(s):</span>
+                <span class="tag">
+                    
+                    
+                        <a href="#"># Top</a>
+                    
+                        
+                </span>
+            </div>
+            <div>
+                <a href="javascript:window.history.back();">Back</a>
+                <span> & </span>
+                <a href="/">Home</a>
+            </div>
+        </section> 
+        <section class="post-nav">
+            
+            
+            <a class="next" rel="next" href="/2024/04/10/%E5%AE%9E%E9%AA%8C%E5%9B%A2%E9%98%9F%E4%BB%8B%E7%BB%8D/">实验团队介绍</a>
+            
+        </section>
+    </article>
+</div>
+
+            </div>
+            <footer id="footer" class="footer">
+    <div class="copyright">
+         <span>© <a href="https://blog-chenghua.github.io/about" target="_blank">Chenghua</a></span> | Hosted on <a href="https://pages.github.com/" target="_blank">Github Pages</a></span>
+    </div>
+</footer>
+
+    </div>
+
+    <div id="u-search">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="container">
+                    <form id="u-search-modal-form" class="u-search-modal-form">
+                        <button type="submit" class="form-submit-btn">
+                            <img src="/image/search.png" class="search-btn-img" />
+                        </button>
+                        <input placeholder="Searching..." class="form-input" onchange="inputChange(event)" id="modal-form-input">
+                    </form>
+                    <a class="modal-close">x</a>
+                </div>
+                <div class="search-loading">
+                    <div class="search-loading-bar"></div>
+                </div>
+            </div>
+            <div class="modal-body">
+            </div>
+        </div>
+        <div class="modal-overlay"></div>
+    </div>
+</body>
+
+</html>
