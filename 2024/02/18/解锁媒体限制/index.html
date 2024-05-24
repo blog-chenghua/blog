@@ -337,7 +337,7 @@
                         
                         <span class="post-count">
                         Words:
-                        <a href="">542</a> 
+                        <a href="">551</a> 
                         </span>
                         
                         
@@ -355,7 +355,8 @@
 <p>警告：若使用苹果共享账号下载软件，则必须从APP Store登录，并且登录时不要选择双重认证，选择其他选项中不升级即可，严禁在设置中登录iCloud，否则可能导致锁机或者隐私泄露！</p>
 </blockquote>
 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>Emby 是一款媒体服务器软件，允许用户在家庭网络中存储、管理并远程访问他们的数字媒体库。它支持多种设备和平台，包括电视、智能手机和平板电脑。为充分利用 Emby 的客户端功能，用户需对其进行相应的解锁操作。对于安卓手机及电视端，解锁过程较为简便，也可以采用第三方开源的替代程序；而对于苹果设备而言，解锁过程则相对复杂。具体而言，低版本的iOS/iPad系统可以通过特定的安装方式绕过证书验证；而高版本系统则需探索其他解锁方案。本文将分享使用Shadowrocket应用来解锁Emby的方法。</p>
-<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p>iOS/iPad 进入 APP Store （美区）下载官方 Emby 和 Shadowrocket两款应用软件</p>
+<h2 id="准备工作"><a href="#准备工作" class="headerlink" title="准备工作"></a>准备工作</h2><p>iOS/iPad 进入 APP Store （美区）下载官方 Emby 和 Shadowrocket两款应用软件,以苹果共享账号为例</p>
+<p><img src="https://img.chenghua.icu/file/f6475dd1e4cc8914adeb0.jpg" alt="iphoen2"></p>
 <h2 id="解锁教程"><a href="#解锁教程" class="headerlink" title="解锁教程"></a>解锁教程</h2><p>1、打开Shadowrocket，点击下方的配置进入，然后对着 default.conf 按住不放，选择编辑纯文本。如下图：</p>
 <p><img src="https://images.hexsen.com/i/2023/03/emby-ios-xhj.webp" alt="iOS/iPad 利用小火箭解锁 Emby 的方法"></p>
 <p>2、粘贴代码至尾部，然后保存。接着再对 default.conf 按住不放，进入编辑配置</p>
@@ -372,6 +373,8 @@
 <p><img src="https://images.hexsen.com/i/2023/03/emby-ios-ok.webp" alt="iOS/iPad 利用小火箭解锁 Emby 的方法"></p>
 <p>下面就可以愉快无限制的使用了，以下内容为解锁代码的备份：</p>
 <figure class="highlight plaintext"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">if ($request.url.indexOf('mb3admin.com/admin/service/registration/validateDevice') != -1) {</span><br><span class="line">    if($response.status!=200){</span><br><span class="line">        $notification.post("Emby Premiere 已激活", "", "");</span><br><span class="line">        $done({status: 200, headers: $response.headers, body: '{"cacheExpirationDays":999,"resultCode":"GOOD","message":"Device Valid"}' })</span><br><span class="line">    }else{</span><br><span class="line">        $done({})</span><br><span class="line">    }</span><br><span class="line">}else{</span><br><span class="line">    $done({})</span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+
         </div>
 
         
