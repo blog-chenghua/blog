@@ -372,9 +372,9 @@
 <h3 id="降级固件版本："><a href="#降级固件版本：" class="headerlink" title="降级固件版本："></a><strong>降级固件版本</strong>：</h3><ul>
 <li><p>确保将路由器固件版本降级到兼容的版本，需要寻找特定版本的官方固件，然后进行降级。</p>
 <p>1、登录 360 P2 路由器管理后台，在防火墙设置 -&gt; 高级设置 -&gt; 系统升级页面处，将360 P2路由器的固件降级至 1.0.25 版本，等待上传文件完成后重启降级，不降级直接降级调试版本，会提示升级包错误，如下图：</p>
-<p><img src="https://img.chenghua.icu/file/1f9c4f3235e96cd0ea6a4.png" alt="pic1"></p>
+<p><img src="https://img.chenghua.site/file/1f9c4f3235e96cd0ea6a4.png" alt="pic1"></p>
 <p>2、降级 1.0.25 版本成功后，再通过登录 360路由器 管理后台，在防火墙设置 -&gt; 高级设置 -&gt; 系统升级，选择手动升级将 360POP-P2-DEBUG-V1.0.42.42668.bin 上传并开始降级，升级完成后设备会自动重启，如下图：</p>
-<p><img src="https://img.chenghua.icu/file/c74cca3bc2ed17bb0c5fd.png" alt="pic2"></p>
+<p><img src="https://img.chenghua.site/file/c74cca3bc2ed17bb0c5fd.png" alt="pic2"></p>
 </li>
 </ul>
 <h3 id="备份配置："><a href="#备份配置：" class="headerlink" title="备份配置："></a><strong>备份配置</strong>：</h3><ul>
@@ -383,27 +383,27 @@
 <h3 id="刷入Breed固件："><a href="#刷入Breed固件：" class="headerlink" title="刷入Breed固件："></a><strong>刷入Breed固件</strong>：</h3><ul>
 <li><p>Breed是一种用于刷写第三方固件的引导程序。需要使用hfs文件服务器将Breed引导程序刷入路由器中，确保它能够取代原厂的引导程序。</p>
 <p>1、将下载好的 hfs.exe 双击打开，把breed-mt7628-hiwifi-hc5661a.bin拖动到 hfs 的左框中，注意地址是否为 <code>192.168.0.2</code>，确认无误后，将地址复制出来，此时不要关闭 HFS 文件管理器，最小化即可，如下图：</p>
-<p><img src="https://img.chenghua.icu/file/4ca75bd74ef5d5840696e.png" alt="pic3"></p>
+<p><img src="https://img.chenghua.site/file/4ca75bd74ef5d5840696e.png" alt="pic3"></p>
 <p>2、解压 Putty-0.7 压缩包，找到 Putty.exe 双击打开，使用Telnet 连接 360 P2 路由器，<code>Login：admin，Password ：12345678</code>，如下图：</p>
-<p><img src="https://img.chenghua.icu/file/05a9c895001155bb2b1b8.png" alt="pic4"></p>
+<p><img src="https://img.chenghua.site/file/05a9c895001155bb2b1b8.png" alt="pic4"></p>
 <p>3、使用 Telnet 成功登陆后，依次执行以下命令，进行写入 Breed引导程序，**注意 wget 的下载地址要和你的 Hfs 文件管理器提供的地址一致 **，如下图：</p>
 <figure class="highlight bash"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /tmp</span><br><span class="line">wget http://192.168.0.2:8080/breed-mt7628-hiwifi-hc5661a.bin</span><br><span class="line">mtd_write erase /dev/mtd1</span><br><span class="line"><span class="built_in">cat</span> breed-mt7628-hiwifi-hc5661a.bin &gt; /dev/mtd1</span><br></pre></td></tr></tbody></table></figure>
 
-<p><img src="https://img.chenghua.icu/file/18113c0030b27976c2f61.png" alt="pic4"></p>
+<p><img src="https://img.chenghua.site/file/18113c0030b27976c2f61.png" alt="pic4"></p>
 <p>4、执行完成命令，断开电源后按住 Reset 键然后再插上电源，按住 Reset 键不要松手，通电 10s 后松手，重新用网线连接上路由器后，在浏览器中里输入<code>192.168.1.1</code> 即可看到 Breed 管理界面，如下图：</p>
-<p><img src="https://img.chenghua.icu/file/93c4d0258843f7f186e79.png" alt="pic4"></p>
+<p><img src="https://img.chenghua.site/file/93c4d0258843f7f186e79.png" alt="pic4"></p>
 </li>
 </ul>
 <h3 id="刷入第三方固件："><a href="#刷入第三方固件：" class="headerlink" title="刷入第三方固件："></a><strong>刷入第三方固件</strong>：</h3><ul>
 <li><p>使用Breed引导程序，刷入选择的第三方固件。</p>
 <p>1、将下载好Pandora固件，通过 Breed 控制台内的“固件更新”-“固件”-“选择文件”进行上传，闪存布局默认公版（0x50000），勾选自动重启并点击上传，等待进度条完成，如下图：</p>
-<p><img src="https://img.chenghua.icu/file/3527e4a0bb677fe2cdff7.png" alt="pic4"></p>
+<p><img src="https://img.chenghua.site/file/3527e4a0bb677fe2cdff7.png" alt="pic4"></p>
 </li>
 </ul>
 <h3 id="重启路由器："><a href="#重启路由器：" class="headerlink" title="重启路由器："></a><strong>重启路由器</strong>：</h3><ul>
 <li><p>安装完成后，重新启动路由器。等待一段时间，让新固件生效。</p>
 <p>1、重启完成，通过浏览器访问登陆网关进行Pandor固件的设置，默认的登录网关：192.168.1.1，默认用户名：root，默认密码：admin，设置根据自己习惯设置，如下图：</p>
-<p><img src="https://img.chenghua.icu/file/4c6a18731a533c636105b.png" alt="pic4"></p>
+<p><img src="https://img.chenghua.site/file/4c6a18731a533c636105b.png" alt="pic4"></p>
 </li>
 </ul>
 <h3 id="配置和测试："><a href="#配置和测试：" class="headerlink" title="配置和测试："></a><strong>配置和测试</strong>：</h3><ul>
@@ -437,13 +437,13 @@
 <p>2.伪装电脑，正常启动官方的认证程序,连接之后查看自己的网卡物理地址，然后替换掉Padavan固件的外部网络设置里的物理地址（MAC）。</p>
 <p>3.开启路由器的SSH功能, 然后用WinSCP连接上路由器, 把官方认证程序的通讯协议文件（.mpf）传到路由器固件的<code>/etc/storage</code>文件夹下,然后到路由器的系统管理中,将<code>/etc/storage</code>文件夹的内容保存到闪存, 否则重启之后文件被自动删除。</p>
 <p>4.在固件的拓展功能中找到锐捷认证，正确输入账号和密码连接，然后需要配置认证选项,并填入正确的通讯协议文件路径即可。</p>
-<p><img src="https://img.chenghua.icu/file/0ccbd059c55bd83866bb8.png" alt="pic4"></p>
-<p><img src="https://img.chenghua.icu/file/b667704df9695192d9091.png" alt="pic4"></p>
+<p><img src="https://img.chenghua.site/file/0ccbd059c55bd83866bb8.png" alt="pic4"></p>
+<p><img src="https://img.chenghua.site/file/b667704df9695192d9091.png" alt="pic4"></p>
 <p><strong>实验室专属校园网络实现全天候高速上网，为科研保驾护航。</strong></p>
 <p><strong>WIFI名称：Pandora</strong></p>
 <p><strong>WIFI密码：lch1406.</strong></p>
 <p><strong>路由器用户名:admin</strong></p>
-<p><strong>路由器密码:5240</strong></p>
+<p><strong>路由器密码:1406</strong></p>
 
         </div>
 
@@ -490,7 +490,7 @@
     <div class="copyright">
          <span>© <a href="https://blog-chenghua.github.io/about" target="_blank">Chenghua</a></span> | Hosted on <a href="https://pages.github.com/" target="_blank">Github Pages</a></span>
     </div>
-    <script defer src="https://analysis.chenghua.icu/analytics" data-website-id="ae28e39a-946d-40c4-bcdc-d5decac7e7b2"></script>
+    <script defer src="https://analysis.chenghua.site/analytics" data-website-id="ae28e39a-946d-40c4-bcdc-d5decac7e7b2"></script>
 </footer>
 
     </div>

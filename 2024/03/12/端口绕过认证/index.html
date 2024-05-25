@@ -377,7 +377,7 @@
 <p>2.创建完成后需要<strong>新建一个无痕窗口</strong>，重新打开<a href="https://signup.azure.com/studentverification?offerType=1">Azure学生认证网站</a> ，使用刚刚注册的账号进行登录，并重定向至这个页面</p>
 <p><a href="https://s2.loli.net/2023/08/19/4frjmqlBthUQF3d.png"><img src="https://s2.loli.net/2023/08/19/4frjmqlBthUQF3d.png" alt="学术认证"></a></p>
 <p>3.如果<strong>你的学校有校园邮箱，请使用你自己的校园邮箱</strong>，将邮箱填入下面的学校电子邮箱地址栏，点击学术认证，如果成功，将会在校园邮箱里面收到验证邮件，复制邮件中的地址到<strong>无痕窗口中打开</strong>，跟随它的认证方式来认证学生身份，最终显示为<strong>绿色即为通过</strong>,如果你没有通过学术认证,请重新注册账号并重复以上步骤，或者提交工单至微软服务平台解决。</p>
-<p><img src="https://img.chenghua.icu/file/fb8a2839ce5ea2bee5ebc.png" alt="access"></p>
+<p><img src="https://img.chenghua.site/file/fb8a2839ce5ea2bee5ebc.png" alt="access"></p>
 </li>
 <li><p>在账号通过认证后，同样使用<strong>无痕窗口</strong>登陆控制台：<a href="https://portal.azure.com/">Azure控制台</a></p>
 <p>1.使用通过学生认证的账号进行登陆，登陆后到这个页面点击<strong>创建资源</strong></p>
@@ -397,13 +397,13 @@
 <p>8.最后点击查看与创建，验证通过后点击下方的创建，创建后<strong>点击转到资源组</strong></p>
 <p><a href="https://s2.loli.net/2023/08/19/DmknWcw2ipvLOf1.png"><img src="https://s2.loli.net/2023/08/19/DmknWcw2ipvLOf1.png" alt="创建"></a></p>
 <p>9.恭喜，服务器创建成功，转到资源组后等待服务器启动，将公共IP地址复制下来待用</p>
-<p><img src="https://img.chenghua.icu/file/5cc98188fa35ad559769b.png" alt="公网IP"></p>
+<p><img src="https://img.chenghua.site/file/5cc98188fa35ad559769b.png" alt="公网IP"></p>
 </li>
 </ul>
 <h3 id="远程登录服务器："><a href="#远程登录服务器：" class="headerlink" title="远程登录服务器："></a>远程登录服务器：</h3><ul>
 <li><p>下载并安装终端模拟器工具，例如XShell、FinalShell，远程连接和管理Linux服务器。</p>
 </li>
-<li><p>输入 <code>ssh 用户名@公网IP地址</code> ，注意<strong>将用户名修改为创建虚拟机时输入的用户名，公网IP地址使用刚刚复制的地址，键盘按下回车，提示输入密码</strong>，<strong>密码输入时不显示</strong>，密码输入后回车。显示以下界面则说明登陆成功。<img src="https://img.chenghua.icu/file/74fb2399623f9e846258b.png" alt="shell"></p>
+<li><p>输入 <code>ssh 用户名@公网IP地址</code> ，注意<strong>将用户名修改为创建虚拟机时输入的用户名，公网IP地址使用刚刚复制的地址，键盘按下回车，提示输入密码</strong>，<strong>密码输入时不显示</strong>，密码输入后回车。显示以下界面则说明登陆成功。<img src="https://img.chenghua.site/file/74fb2399623f9e846258b.png" alt="shell"></p>
 </li>
 <li><p>在成功登陆后，首先切换到最高权限，然后开放服务器端口即可，当运行到最后一句时，输入Y 然后回车</p>
 <figure class="highlight shell"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sudo su</span><br><span class="line">ufw allow 53</span><br><span class="line">ufw allow 67</span><br><span class="line">ufw allow 69</span><br><span class="line">ufw enable</span><br></pre></td></tr></tbody></table></figure>
@@ -468,7 +468,7 @@
     <div class="copyright">
          <span>© <a href="https://blog-chenghua.github.io/about" target="_blank">Chenghua</a></span> | Hosted on <a href="https://pages.github.com/" target="_blank">Github Pages</a></span>
     </div>
-    <script defer src="https://analysis.chenghua.icu/analytics" data-website-id="ae28e39a-946d-40c4-bcdc-d5decac7e7b2"></script>
+    <script defer src="https://analysis.chenghua.site/analytics" data-website-id="ae28e39a-946d-40c4-bcdc-d5decac7e7b2"></script>
 </footer>
 
     </div>

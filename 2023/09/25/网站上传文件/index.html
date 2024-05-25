@@ -358,16 +358,16 @@
 <p>Vim 是一种广泛使用的文本编辑器，以其强大功能和高度可定制性而闻名。然而，它也因为其不直观的命令和操作模式而臭名昭著，特别是对于初学者来说。</p>
 <p>笑话的幽默在于，Vim 的退出命令（通常是 <code>:q!</code> 或 <code>:wq</code>）对于新手来说并不明显，可能会导致他们在尝试退出 Vim 时随机尝试各种命令组合。因此，这里的“生成随机字符串”实际上是在说新生在尝试退出 Vim 时可能会无意中输入一连串随机的键盘字符。</p>
 <p>这个笑话体现了程序员社区中的一种幽默，通过夸张描述一个共同的困境来达到幽默效果。这样的笑话能够让处于不同水平的程序员产生共鸣，因为几乎每个使用 Vim 的人都可能在初次使用时面临过退出的挑战。</p>
-<h3 id="Vim-中的模式"><a href="#Vim-中的模式" class="headerlink" title="Vim 中的模式"></a>Vim 中的模式</h3><p><img src="https://img.chenghua.icu/file/572fd97af9dc8fd263a28.png" alt="image"></p>
+<h3 id="Vim-中的模式"><a href="#Vim-中的模式" class="headerlink" title="Vim 中的模式"></a>Vim 中的模式</h3><p><img src="https://img.chenghua.site/file/572fd97af9dc8fd263a28.png" alt="image"></p>
 <ul>
 <li><p><strong>命令模式(Command mode)</strong><br>这是 Vim 启动后默认的模式。在这个模式下，你可以使用各种键盘快捷键来执行操作，如移动光标、删除文本、复制和粘贴文本等。这些命令通常都是单个字母，或者是字母的组合。例如：</p>
-<figure class="highlight vim"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">* `h, <span class="keyword">j</span>, <span class="keyword">k</span>, <span class="keyword">l</span>`：分别用来向左、向下、向上、向右移动光标。</span><br><span class="line">* `dd`：删除当前行。</span><br><span class="line">* `yy`：复制当前行。(<span class="number">2</span>yy指复制两行内容)</span><br><span class="line">* `<span class="keyword">p</span>`：粘贴最近一次复制或删除的内容。(<span class="number">2</span><span class="keyword">p</span>指粘贴两次)</span><br><span class="line">* `Ctrl+<span class="keyword">f</span>` : 向前翻页</span><br><span class="line">* `Ctrl+<span class="keyword">f</span>` : 向前翻页</span><br><span class="line">* `Ctrl+<span class="keyword">u</span>` : 向前翻半页</span><br><span class="line">* `Ctrl+d` : 向前翻半页</span><br><span class="line">* `G`: 跳转到文件最后一行(输入<span class="number">100</span>G跳转到<span class="number">100</span>行 等同于尾行模式输入:<span class="number">100</span>)</span><br><span class="line">* `gg`: 跳转到文件第一行</span><br><span class="line">* `/searchtext`: 查找文本 (使用n继续向下查找) (查找的时候如果要忽略大小写使用/searchtext\<span class="keyword">c</span>)</span><br><span class="line">* `?searchtext`: 查找文本 (使用n继续向上查找) (查找的时候如果要忽略大小写使用/searchtext\<span class="keyword">c</span>)</span><br><span class="line">* `<span class="keyword">u</span>`: 等同于windows中的CTRL+Z(撤销)</span><br><span class="line">* `^`: 行首</span><br><span class="line">* `$`:  行尾</span><br></pre></td></tr></tbody></table></figure>
+<figure class="highlight vim"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">* `h, <span class="keyword">j</span>, <span class="keyword">k</span>, <span class="keyword">l</span>`：分别用来向左、向下、向上、向右移动光标。</span><br><span class="line">* `dd`：删除当前行。</span><br><span class="line">* `yy`：复制当前行。(<span class="number">2</span>yy指复制两行内容)</span><br><span class="line">* `<span class="keyword">p</span>`：粘贴最近一次复制或删除的内容。(<span class="number">2</span><span class="keyword">p</span>指粘贴两次)</span><br><span class="line">* `Ctrl+<span class="keyword">f</span>` : 向前翻页</span><br><span class="line">* `Ctrl+<span class="keyword">f</span>` : 向前翻页</span><br><span class="line">Ctrl+<span class="keyword">u</span> : 向前翻半页</span><br><span class="line">* `Ctrl+d` : 向前翻半页</span><br><span class="line">* `G`: 跳转到文件最后一行(输入<span class="number">100</span>G跳转到<span class="number">100</span>行 等同于尾行模式输入:<span class="number">100</span>)</span><br><span class="line">* `gg`: 跳转到文件第一行</span><br><span class="line">* `/searchtext`: 查找文本 (使用n继续向下查找) (查找的时候如果要忽略大小写使用/searchtext\<span class="keyword">c</span>)</span><br><span class="line">* `?searchtext`: 查找文本 (使用n继续向上查找) (查找的时候如果要忽略大小写使用/searchtext\<span class="keyword">c</span>)</span><br><span class="line">* `<span class="keyword">u</span>`: 等同于windows中的CTRL+Z(撤销)</span><br><span class="line">* `^`: 行首</span><br><span class="line">* `$`:  行尾</span><br></pre></td></tr></tbody></table></figure>
 </li>
 <li><p><strong>插入模式(Insert mode)</strong><br>插入模式是用于输入文本的。在命令模式下，你可以通过一些特定的命令进入插入模式，如：</p>
 <figure class="highlight vim"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">* `i`：在当前光标位置前插入。</span><br><span class="line">* `<span class="keyword">a</span>`：在当前光标位置后插入。</span><br><span class="line">* `<span class="keyword">o</span>`：在当前行下方新开一行，并进入插入模式。</span><br></pre></td></tr></tbody></table></figure>
 
 <p>这里大小写是有区分不同的功能的如图所示</p>
-<p><img src="https://img.chenghua.icu/file/3822477d201ea4a4f73b5.png" alt="image"></p>
+<p><img src="https://img.chenghua.site/file/3822477d201ea4a4f73b5.png" alt="image"></p>
 <p>当你处于插入模式时，可以直接输入文本，此时输入的任何内容都将直接添加到文本文件中。要返回命令模式，通常按 <code>Esc</code> 键</p>
 </li>
 <li><p><strong>尾行模式(Ex mode)</strong><br>尾行模式允许你输入在命令行中执行的命令，这些命令可以用于保存文件、设置选项、查找和替换文本等更复杂的操作。进入这个模式通常通过按 <code>:</code> 键（在命令模式下）。在命令行提示符出现后，你可以输入命令。例如：</p>
@@ -448,7 +448,7 @@
         </section> 
         <section class="post-nav">
             
-                <a class="prev" rel="prev" href="/2023/10/11/%E8%8B%B1%E6%96%87%E9%98%85%E8%AF%BB%E6%96%B0%E9%97%BB/">英文阅读文献</a>
+                <a class="prev" rel="prev" href="/2023/10/11/%E8%8B%B1%E6%96%87%E9%98%85%E8%AF%BB%E6%96%B0%E9%97%BB/">英文阅读新闻</a>
             
             
             <a class="next" rel="next" href="/2023/09/21/%E5%AE%9E%E9%AA%8C%E5%AE%A4%E8%B7%AF%E7%94%B1%E5%99%A8/">路由刷机教程</a>
@@ -462,7 +462,7 @@
     <div class="copyright">
          <span>© <a href="https://blog-chenghua.github.io/about" target="_blank">Chenghua</a></span> | Hosted on <a href="https://pages.github.com/" target="_blank">Github Pages</a></span>
     </div>
-    <script defer src="https://analysis.chenghua.icu/analytics" data-website-id="ae28e39a-946d-40c4-bcdc-d5decac7e7b2"></script>
+    <script defer src="https://analysis.chenghua.site/analytics" data-website-id="ae28e39a-946d-40c4-bcdc-d5decac7e7b2"></script>
 </footer>
 
     </div>
