@@ -1,7 +1,5 @@
-<h1 align="center"><a href="https://blog-chenghua.github.io" target="_blank">Chenghua's Blog</a></h1>
-
 <p align="center">
-<img src="https://img.chenghua.icu/file/46a4ab9e6dd1d01274692.png" alt="Chic theme">
+<img src="https://img.chenghua.site/file/d64d209f7cc90812f7add.png" alt="Chic theme">
 </p>
 <p align="center">
 <img alt="Author" src="https://img.shields.io/badge/Author-Sirice-lightgray.svg"/>
