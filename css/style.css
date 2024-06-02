@@ -451,7 +451,7 @@ input[type="radio"]:not(:checked) + label:after {
   content: "\e887";
 }
 
-.icon-youtube:before {
+.icon-emby:before {
   content: "\e888";
 }
 
