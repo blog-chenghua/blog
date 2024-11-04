@@ -403,40 +403,79 @@
 <li>设置分区根据电脑内存和存储不同而不同，具体参见<a href="https://blog.csdn.net/sinat_38363122/article/details/115765230">Ubuntu分区</a>，勾选后点击install now。</li>
 </ul>
 </blockquote>
-<table>
-<thead>
-<tr>
-<th align="center"><strong>分区</strong></th>
-<th align="center"><strong>挂载点</strong></th>
-<th align="center"><strong>类型</strong></th>
-<th align="center"><strong>备注</strong></th>
-</tr>
-</thead>
+<div style="overflow:auto;width:100%"> <table width="auto" style="white-space:nowrap">
 <tbody><tr>
-<td align="center">Primary</td>
-<td align="center">/boot</td>
-<td align="center">Ext4</td>
-<td align="center">用于引导系统镜像，建议用户分配存储空间500MB-2GB</td>
+<td> <div align="center"> <strong>名称</strong></div> </td> 
+<td> <div align="center"> <strong>分区</strong></div> </td> 
+<td> <div align="center"> <strong>挂载点</strong></div> </td>
+<td> <div align="center"> <strong>类型</strong></div> </td>
+<td> <div align="center"> <strong>备注</strong></div> </td>
 </tr>
-<tr>
-<td align="center">Logical</td>
-<td align="center">/</td>
-<td align="center">Ext4</td>
-<td align="center">用于存放系统文件，建议用户分配总存储空间的20-30%</td>
+<tr><td>
+<div align="center">第一分区</div> </td>
+
+  <td>
+<div align="center"></div>Primary</td>
+  
+<td>
+    <div align="center">/boot</div> </td>
+
+<td>
+<div align="center">Ext4</div> </td>
+
+<td>
+<div align="center">用于引导系统镜像，建议用户分配存储空间300-500MB，若存储空间充足则直接分配2GB</div> </td>
 </tr>
-<tr>
-<td align="center">Logical</td>
-<td align="center">SWAP</td>
-<td align="center">SWAP</td>
-<td align="center">用于拓展内存空间，建议用户分配总物理内存的1到2倍</td>
+<tr><td>
+<div align="center">第二分区</div> </td>
+
+<td>
+<div align="center">Logical</div> </td>
+
+<td>
+    <div align="center">/</div> </td>
+
+<td>
+<div align="center">Ext4</div> </td>
+
+<td>
+<div align="center">用于存放系统文件，建议用户分配总存储空间的20-30%，视个人实际使用情况决定</div> 
+</td>   
 </tr>
-<tr>
-<td align="center">Primary</td>
-<td align="center">/home</td>
-<td align="center">Ext4</td>
-<td align="center">用于存储用户数据，建议用户分配余下的全部存储空间</td>
+<tr><td>
+<div align="center">第三分区</div> </td>
+
+<td>
+<div align="center">Logical</div> </td>
+
+<td>
+    <div align="center">SWAP</div> </td>
+
+<td>
+<div align="center">SWAP</div> </td>
+
+<td>
+<div align="center">用于拓展内存空间，建议用户分配总物理内存的1到2倍</div> 
+</td>
 </tr>
-</tbody></table>
+<tr><td>
+<div align="center">第四分区</div> </td>
+
+<td>
+<div align="center">Primary</div> </td>
+
+<td>
+    <div align="center">/home</div> </td>
+
+<td>
+<div align="center">Ext4</div> </td>
+
+<td>
+<div align="center">用于存储用户数据，建议用户分配余下的全部存储空间</div> 
+    </td>
+    </tr></tbody></table>
+</div>
+
 <p>设置用户名及密码，点击继续。</p>
 <p><img src="https://qiniu.md.amovlab.com/img/m/202207/20220704/1838233359202779120697344.png" alt="image.png"></p>
 <p>等待安装完成后，重启。拔掉U盘，按引导程序进入新系统即可。</p>
